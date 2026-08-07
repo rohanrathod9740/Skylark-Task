@@ -119,6 +119,18 @@ html, body, [class*="css"] {{
     color: var(--text-primary) !important;
 }}
 
+/* ── 3D & GLASSMORPHISM KEYFRAMES ────────────────────────────────────────── */
+@keyframes float-hero {{
+    0% {{ transform: translateY(0px) rotate(0deg); }}
+    50% {{ transform: translateY(-4px) rotate(0.2deg); }}
+    100% {{ transform: translateY(0px) rotate(0deg); }}
+}}
+
+@keyframes shimmer {{
+    0% {{ background-position: -200% 0; }}
+    100% {{ background-position: 200% 0; }}
+}}
+
 /* ── GLOBAL ───────────────────────────────────────────────────────────────── */
 .stApp {{ background: var(--bg-main) !important; }}
 .main .block-container {{ padding: 2rem 2.5rem; max-width: 1400px; }}
@@ -177,11 +189,14 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
     box-shadow: 0 4px 20px rgba(0,0,0,.08) !important;
     position: relative !important;
     overflow: hidden !important;
-    transition: transform .2s ease, box-shadow .2s ease !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease !important;
 }}
 [data-testid="metric-container"]:hover {{
-    transform: translateY(-3px) !important;
-    box-shadow: 0 8px 32px rgba(0,115,234,.18) !important;
+    transform: translateY(-5px) scale(1.02) rotateX(1.5deg) !important;
+    box-shadow: 0 16px 36px rgba(0,115,234,.16) !important;
+    border-color: rgba(0,115,234,0.25) !important;
 }}
 [data-testid="metric-container"]::before {{
     content: '';
@@ -217,6 +232,7 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
     box-shadow: 0 12px 48px rgba(0,115,234,.3);
     position: relative;
     overflow: hidden;
+    animation: float-hero 6s ease-in-out infinite;
 }}
 .hero-card::before {{
     content: '';
