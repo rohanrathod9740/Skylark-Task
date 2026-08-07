@@ -460,14 +460,14 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
 .stCaption {{ color: var(--text-muted) !important; }}
 
 /* ── SIDEBAR COLLAPSE BUTTON — always visible ────────────────────────────── */
-[data-testid="collapsedControl"] {
+[data-testid="collapsedControl"] {{
     position: fixed !important;
     top: 10px !important;
     left: 10px !important;
     z-index: 999999 !important;
     display: block !important;
-}
-[data-testid="collapsedControl"] button {
+}}
+[data-testid="collapsedControl"] button {{
     background: linear-gradient(135deg, #0073ea, #0095f7) !important;
     border: 1px solid rgba(255,255,255,0.15) !important;
     border-radius: 8px !important;
@@ -478,36 +478,36 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
     justify-content: center !important;
     box-shadow: 0 4px 12px rgba(0,115,234,.35) !important;
     transition: all .2s ease !important;
-}
-[data-testid="collapsedControl"] button:hover {
+}}
+[data-testid="collapsedControl"] button:hover {{
     background: linear-gradient(135deg, #0052cc, #0073ea) !important;
     transform: scale(1.05) !important;
-}
-[data-testid="collapsedControl"] svg {
+}}
+[data-testid="collapsedControl"] svg {{
     fill: #ffffff !important;
     color: #ffffff !important;
     width: 20px !important;
     height: 20px !important;
     opacity: 1 !important;
-}
+}}
 
 /* ── SIDEBAR EXPAND/COLLAPSE ARROW (open state) ──────────────────────────── */
 button[kind="header"],
-[data-testid="stSidebarCollapseButton"] {
+[data-testid="stSidebarCollapseButton"] {{
     opacity: 1 !important;
     visibility: visible !important;
     background: rgba(255,255,255,0.1) !important;
     border-radius: 8px !important;
     border: 1px solid rgba(255,255,255,0.15) !important;
-}
-[data-testid="stSidebarCollapseButton"] svg {
+}}
+[data-testid="stSidebarCollapseButton"] svg {{
     fill: #ffffff !important;
     color: #ffffff !important;
     opacity: 1 !important;
-}
-[data-testid="stSidebarCollapseButton"]:hover {
+}}
+[data-testid="stSidebarCollapseButton"]:hover {{
     background: rgba(255,255,255,0.18) !important;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
