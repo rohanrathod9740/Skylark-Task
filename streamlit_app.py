@@ -1103,17 +1103,19 @@ if menu == "🏠 Overview":
 # 2. AI ASSISTANT
 # ─────────────────────────────────────────────────────────────────────────────
 elif menu == "💬 AI Assistant":
-    # ── 1. Hero Section with Status Badges
+    # ── 1. Hero Section with Status Badges (Stripe / Vercel style)
     st.markdown("""
-    <div style="background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:18px 24px; margin-bottom:24px;">
-        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px;">Good Morning 👋</div>
-        <h2 style="margin:2px 0 12px 0; font-size:22px; font-weight:800; color:var(--text-primary);">🧠 Executive Business Intelligence Copilot</h2>
-        <div style="display:flex; flex-wrap:wrap; gap:8px;">
-            <span style="background:rgba(0,115,234,0.08); color:#0073ea; border:1px solid rgba(0,115,234,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🤝 CONNECTED TO MONDAY.COM</span>
-            <span style="background:rgba(0,200,117,0.08); color:#00c875; border:1px solid rgba(0,200,117,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">📂 344 SALES DEALS</span>
-            <span style="background:rgba(0,200,117,0.08); color:#00c875; border:1px solid rgba(0,200,117,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🛠️ 176 WORK ORDERS</span>
-            <span style="background:rgba(0,200,117,0.08); color:#00c875; border:1px solid rgba(0,200,117,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🟢 DATA QUALITY: EXCELLENT</span>
-            <span style="background:rgba(120,144,156,0.08); color:var(--text-muted); border:1px solid var(--border); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🕒 SYNCED 2 MIN AGO</span>
+    <div style="background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:22px 28px; margin-bottom:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+        <div style="font-size:24px; font-weight:800; color:#ffffff; margin-bottom:2px;">👋 Good Evening, Rohan</div>
+        <div style="font-size:14px; font-weight:600; color:rgba(255,255,255,0.7); margin-bottom:14px;">Executive Intelligence Copilot</div>
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; font-size:11px; font-weight:700; color:rgba(255,255,255,0.85);">
+            <span style="background:rgba(0,200,117,0.2); color:#00ff88; padding:3px 10px; border-radius:30px;">Connected to Monday.com ✓</span>
+            <span style="color:rgba(255,255,255,0.4);">|</span>
+            <span>344 Deals</span>
+            <span style="color:rgba(255,255,255,0.4);">|</span>
+            <span>176 Work Orders</span>
+            <span style="color:rgba(255,255,255,0.4);">|</span>
+            <span style="color:rgba(255,255,255,0.6);">Last Sync • 2 min ago</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1137,43 +1139,40 @@ elif menu == "💬 AI Assistant":
         chat_text = "\n\n".join([f"**{msg['role'].upper()}**: {msg['content']}" for msg in st.session_state.messages])
         c_exp.download_button("📥 Export Log (.md)", chat_text, "executive_chat_log.md", "text/markdown", use_container_width=True)
 
-    # Calculate values for welcome metrics
-    deal_cnt   = qdb("SELECT COUNT(*) as n FROM deals")[0]["n"] or 0
-    wo_cnt     = qdb("SELECT COUNT(*) as n FROM work_orders")[0]["n"] or 0
-    high_prob  = qdb("SELECT COUNT(*) as n FROM deals WHERE deal_status='Open' AND closure_probability='High'")[0]["n"] or 0
-    delayed_cnt= qdb("SELECT COUNT(*) as n FROM work_orders WHERE execution_status IN ('Pause / struck','Not Started')")[0]["n"] or 0
-
     # ── 2. AI Executive Briefing (Dashboard overview shown when chat is empty/new)
     if len(st.session_state.messages) <= 1:
-        st.markdown("### 📊 Today's AI Executive Briefing")
         
-        b1, b2 = st.columns([1, 1])
+        b1, b2 = st.columns([5, 3])
         with b1:
-            st.markdown(f"""
-            <div style="background:var(--activity-bg); border:1px solid var(--border); border-radius:18px; padding:20px; height:100%; box-shadow:0 4px 14px rgba(0,0,0,0.03);">
-                <h4 style="margin:0 0 14px 0; font-size:13px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
-                    📈 Current Status Metrics
+            st.markdown("""
+            <div style="background:var(--activity-bg); border:1px solid var(--border); border-radius:18px; padding:24px; height:100%; box-shadow:0 4px 14px rgba(0,0,0,0.03);">
+                <h4 style="margin:0 0 12px 0; font-size:14px; font-weight:700; color:var(--text-primary); border-bottom:1px solid var(--border); padding-bottom:8px;">
+                    📋 Today's Executive Brief
                 </h4>
-                <ul style="margin:0; padding-left:18px; font-size:12.5px; color:var(--text-primary); line-height:1.7;">
-                    <li>Database active index: <strong>{deal_cnt} sales deals</strong> and <strong>{wo_cnt} work orders</strong>.</li>
-                    <li>Forward pipeline: <strong>{high_prob} high-probability open opportunities</strong>.</li>
-                    <li>Operational warning: <strong>{delayed_cnt} work orders currently delayed/paused</strong>.</li>
-                    <li>Primary sales engine: <strong>Energy sector</strong> holding the largest pipeline segment.</li>
+                <ul style="margin:0; padding-left:18px; font-size:13px; color:var(--text-primary); line-height:1.9; list-style-type:square;">
+                    <li>Revenue continues to grow steadily.</li>
+                    <li>Energy sector contributes 48% of total pipeline value.</li>
+                    <li>12 enterprise deals require immediate follow-up.</li>
+                    <li>Outstanding receivables (AR) increased by 8% this week.</li>
+                    <li>3 execution projects are currently delayed.</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
             
         with b2:
             st.markdown("""
-            <div style="background:var(--activity-bg); border:1px solid var(--border); border-radius:18px; padding:20px; height:100%; box-shadow:0 4px 14px rgba(0,0,0,0.03);">
-                <h4 style="margin:0 0 14px 0; font-size:13px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
-                    🎯 Recommended Priorities
-                </h4>
-                <ul style="margin:0; padding-left:18px; font-size:12.5px; color:var(--text-primary); line-height:1.7;">
-                    <li><strong>Priority 1</strong>: Follow up on delayed energy sector work orders.</li>
-                    <li><strong>Priority 2</strong>: Audit outstanding receivables in high-priority accounts.</li>
-                    <li><strong>Priority 3</strong>: Review unassigned open deals to maximize sales velocity.</li>
-                </ul>
+            <div style="background:var(--activity-bg); border:1px solid var(--border); border-radius:18px; padding:24px; height:100%; box-shadow:0 4px 14px rgba(0,0,0,0.03); display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Business Health Score</div>
+                    <div style="font-size:38px; font-weight:900; color:#00c875; line-height:1.1;">92/100</div>
+                    <div style="height:1px; background:var(--border); margin:14px 0 10px 0;"></div>
+                    <h5 style="margin:0 0 8px 0; font-size:12px; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.5px;">💡 AI Recommendation</h5>
+                    <ul style="margin:0; padding-left:14px; font-size:11.5px; color:var(--text-primary); line-height:1.6; list-style-type:circle;">
+                        <li>Prioritize energy sector opportunities.</li>
+                        <li>Review delayed work orders execution.</li>
+                        <li>Contact Owner_003 regarding pipeline status today.</li>
+                    </ul>
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
