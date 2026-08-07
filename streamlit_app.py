@@ -1164,18 +1164,15 @@ elif menu == "💬 AI Assistant":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### ⚡ Interactive Copilot Capabilities")
         
-        # Combined grid of all 10 interactive BI capability cards
+        # Deduplicated list of 7 unique interactive BI capability cards
         CAPABILITIES = [
-            ("📈 Revenue Forecast", "Predict next quarter revenue using current pipeline and probabilities.", "How is our pipeline looking?", "FORECASTING"),
-            ("⚠️ Operational Risks", "Identify execution bottlenecks and delayed project work orders.", "Show operational risks and stuck work orders", "RISKS"),
-            ("🏭 Sector Performance", "Compare sales volume and delivery counts across industries.", "Show me the pipeline for Energy sector", "ANALYTICS"),
-            ("💰 Cash Flow Analysis", "Analyze billing, collections, and outstanding receivable balances.", "What is our pending billed value from work orders?", "FINANCE"),
-            ("👥 Team Productivity", "Evaluate owner pipelines and won revenue achievements.", "Who are our top clients?", "MANAGEMENT"),
-            ("📊 Executive Briefing", "Generate a consolidated leadership-ready summary report.", "Give me a comprehensive leadership summary update", "REPORTING"),
             ("💰 Revenue Analysis", "Analyze won billing value, collection status, and pending revenues.", "What is our total won revenue and billing status?", "REVENUE"),
             ("📈 Pipeline Health", "Examine sales deal stages, close probabilities, and forward pipelines.", "How is our sales pipeline looking?", "PIPELINE"),
             ("🏭 Sectoral Performance", "Compare performance metrics and pipeline values across industry sectors.", "Show energy sector performance and pipeline breakdown", "SECTORS"),
-            ("⚠️ Operational Metrics", "Track execution metrics, delayed work orders, and stuck project items.", "Show operational metrics and stuck work orders", "OPERATIONS")
+            ("⚠️ Operational Metrics", "Track execution metrics, delayed work orders, and stuck project items.", "Show operational metrics and stuck work orders", "OPERATIONS"),
+            ("💰 Cash Flow Analysis", "Analyze billing, collections, and outstanding receivable balances.", "What is our pending billed value from work orders?", "FINANCE"),
+            ("👥 Team Productivity", "Evaluate owner pipelines and won revenue achievements.", "Who are our top clients?", "MANAGEMENT"),
+            ("📊 Executive Briefing", "Generate a consolidated leadership-ready summary report.", "Give me a comprehensive leadership summary update", "REPORTING")
         ]
         
         cols = st.columns(3)
@@ -1341,16 +1338,13 @@ elif menu == "💬 AI Assistant":
         st.caption("⚡ Quick Actions (Ask Copilot):")
         c1, c2, c3 = st.columns(3)
         CAPS = [
-            ("📈 Pipeline Forecast", "What is our total won revenue and pipeline forecast?"),
-            ("⚠️ Operational Risks", "Show operational risks and stuck work orders"),
-            ("🏭 Sector Performance", "Show me the pipeline for Energy sector"),
-            ("💰 Cash Flow Analysis", "What is our pending billed value from work orders?"),
-            ("👥 Team Productivity", "Who are our top clients?"),
-            ("📊 Executive Briefing", "Give me a comprehensive leadership summary update"),
             ("💰 Revenue Analysis", "What is our total won revenue and billing status?"),
             ("📈 Pipeline Health", "How is our sales pipeline looking?"),
             ("🏭 Sectoral Performance", "Show energy sector performance and pipeline breakdown"),
-            ("⚠️ Operational Metrics", "Show operational metrics and stuck work orders")
+            ("⚠️ Operational Metrics", "Show operational metrics and stuck work orders"),
+            ("💰 Cash Flow Analysis", "What is our pending billed value from work orders?"),
+            ("👥 Team Productivity", "Who are our top clients?"),
+            ("📊 Executive Briefing", "Give me a comprehensive leadership summary update")
         ]
         cols_grid = [c1, c2, c3]
         for idx, (label, query) in enumerate(CAPS):
