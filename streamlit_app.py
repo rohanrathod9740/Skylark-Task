@@ -1530,18 +1530,18 @@ elif menu == "📊 Executive Dashboard":
 
     # ── 1. Header Section
     st.markdown("""
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:18px 24px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:18px 24px; box-shadow:0 4px 20px rgba(0,0,0,0.08); color:#ffffff !important;">
         <div>
-            <h1 style="margin:0; font-size:24px; font-weight:800; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <h1 style="margin:0; font-size:24px; font-weight:800; color:#ffffff !important; display:flex; align-items:center; gap:8px;">
                 🚁 Executive Business Intelligence Dashboard
             </h1>
-            <p style="margin:4px 0 0; font-size:12px; color:var(--text-muted);">Current Quarter (Q3) · Friday Real-Time Cache Sync · Data Integrity Verified</p>
+            <p style="margin:4px 0 0; font-size:12px; color:rgba(255,255,255,0.7) !important;">Current Quarter (Q3) · Friday Real-Time Cache Sync · Data Integrity Verified</p>
         </div>
         <div style="display:flex; gap:12px;">
-            <div style="background:rgba(0,200,117,0.1); border:1px solid rgba(0,200,117,0.18); padding:6px 14px; border-radius:30px; font-size:11px; font-weight:700; color:#00c875; letter-spacing:0.3px;">
+            <div style="background:rgba(0,200,117,0.2) !important; border:1px solid rgba(0,200,117,0.3) !important; padding:6px 14px; border-radius:30px; font-size:11px; font-weight:700; color:#00ff88 !important; letter-spacing:0.3px;">
                 ● DATA HEALTH: 98% (CLEAN)
             </div>
-            <div style="background:rgba(0,115,234,0.1); border:1px solid rgba(0,115,234,0.18); padding:6px 14px; border-radius:30px; font-size:11px; font-weight:700; color:#0073ea; letter-spacing:0.3px;">
+            <div style="background:rgba(0,115,234,0.2) !important; border:1px solid rgba(0,115,234,0.3) !important; padding:6px 14px; border-radius:30px; font-size:11px; font-weight:700; color:#60a5fa !important; letter-spacing:0.3px;">
                 🤖 AI CO-PILOT: ACTIVE
             </div>
         </div>
@@ -1641,13 +1641,24 @@ elif menu == "📊 Executive Dashboard":
             text=[f"₹{won_rev/1e7:.2f} Cr", f"₹{weighted_forecast/1e7:.2f} Cr", f"₹{open_pipe/1e7:.2f} Cr"],
             textposition='auto'
         ))
+        is_dark = st.session_state.get("dark_mode", False)
+        text_color = "#f0f2f8" if is_dark else "#0d1117"
+        
         fig_rev.update_layout(
-            title=dict(text="Revenue Projections & Forecast Funnel (INR)", font=dict(size=14, color=theme["font_color"])),
+            title=dict(text="Revenue Projections & Forecast Funnel (INR)", font=dict(size=14, color=text_color, family="Outfit")),
             plot_bgcolor=theme["plot_bgcolor"],
             paper_bgcolor=theme["paper_bgcolor"],
-            font_color=theme["font_color"],
-            xaxis=dict(showgrid=True, gridcolor=theme["grid_color"], color=theme["font_color"]),
-            yaxis=dict(color=theme["font_color"]),
+            font=dict(color=text_color, family="Outfit"),
+            xaxis=dict(
+                showgrid=True, 
+                gridcolor=theme["grid_color"], 
+                color=text_color,
+                tickfont=dict(color=text_color, size=10, family="Outfit")
+            ),
+            yaxis=dict(
+                color=text_color,
+                tickfont=dict(color=text_color, size=10, family="Outfit")
+            ),
             margin=dict(l=20, r=20, t=40, b=20),
             height=280
         )
@@ -1680,13 +1691,22 @@ elif menu == "📊 Executive Dashboard":
             name="Outstanding AR", marker_color="#df2f4a"
         ))
         fig_bot.update_layout(
-            title=dict(text="Invoicing & Outstanding Receivables Bottlenecks by Client (INR)", font=dict(size=14, color=theme["font_color"])),
+            title=dict(text="Invoicing & Outstanding Receivables Bottlenecks by Client (INR)", font=dict(size=14, color=text_color, family="Outfit")),
             barmode="group",
             plot_bgcolor=theme["plot_bgcolor"],
             paper_bgcolor=theme["paper_bgcolor"],
-            font_color=theme["font_color"],
-            xaxis=dict(gridcolor=theme["grid_color"], color=theme["font_color"]),
-            yaxis=dict(gridcolor=theme["grid_color"], color=theme["font_color"]),
+            font=dict(color=text_color, family="Outfit"),
+            legend=dict(font=dict(color=text_color, family="Outfit")),
+            xaxis=dict(
+                gridcolor=theme["grid_color"], 
+                color=text_color,
+                tickfont=dict(color=text_color, size=10, family="Outfit")
+            ),
+            yaxis=dict(
+                gridcolor=theme["grid_color"], 
+                color=text_color,
+                tickfont=dict(color=text_color, size=10, family="Outfit")
+            ),
             margin=dict(l=20, r=20, t=40, b=20),
             height=300
         )
@@ -1911,11 +1931,35 @@ Operations have successfully delivered **{comp_count} work orders**, achieving a
     ca, cb = st.columns(2)
     df_snap = pd.DataFrame(qdb("SELECT deal_status, COUNT(*) as count, SUM(masked_deal_value) as value FROM deals GROUP BY deal_status"))
     cmap    = {"Open": "#0073ea", "Won": "#00c875", "Dead": "#df2f4a", "On Hold": "#fdab3d"}
+    theme = get_chart_theme()
+    is_dark = st.session_state.get("dark_mode", False)
+    text_color = "#f0f2f8" if is_dark else "#0d1117"
+    
     with ca:
         fig1 = px.pie(df_snap, values="count", names="deal_status", hole=.38, title="Deals by Status", color="deal_status", color_discrete_map=cmap)
-        fig1.update_layout(plot_bgcolor="#fff", paper_bgcolor="#fff")
+        fig1.update_layout(
+            plot_bgcolor=theme["plot_bgcolor"], 
+            paper_bgcolor=theme["paper_bgcolor"],
+            font=dict(color=text_color, family="Outfit"),
+            title=dict(font=dict(color=text_color, family="Outfit")),
+            legend=dict(font=dict(color=text_color, family="Outfit"))
+        )
         st.plotly_chart(fig1, use_container_width=True)
     with cb:
         fig2 = px.bar(df_snap, x="deal_status", y="value", color="deal_status", title="Pipeline Value by Status", color_discrete_map=cmap, labels={"value": "₹ Value"})
-        fig2.update_layout(showlegend=False, plot_bgcolor="#fff", paper_bgcolor="#fff")
+        fig2.update_layout(
+            showlegend=False, 
+            plot_bgcolor=theme["plot_bgcolor"], 
+            paper_bgcolor=theme["paper_bgcolor"],
+            font=dict(color=text_color, family="Outfit"),
+            title=dict(font=dict(color=text_color, family="Outfit")),
+            xaxis=dict(
+                color=text_color,
+                tickfont=dict(color=text_color, size=10, family="Outfit")
+            ),
+            yaxis=dict(
+                color=text_color,
+                tickfont=dict(color=text_color, size=10, family="Outfit")
+            )
+        )
         st.plotly_chart(fig2, use_container_width=True)
