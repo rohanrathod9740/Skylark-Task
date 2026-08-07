@@ -428,10 +428,40 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
 
 /* ── CHAT ────────────────────────────────────────────────────────────────── */
 [data-testid="stChatMessageContent"] {{
-    font-size: 15px !important; line-height: 1.7 !important;
+    font-size: 14.5px !important; line-height: 1.7 !important;
     color: var(--text-primary) !important;
 }}
-[data-testid="stChatMessage"] {{ border-radius: 16px !important; margin-bottom: 12px !important; }}
+[data-testid="stChatMessage"] {{
+    background-color: var(--feat-bg) !important;
+    border: 1px solid var(--feat-border) !important;
+    border-radius: 18px !important;
+    padding: 14px 20px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+    margin-bottom: 14px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}}
+[data-testid="stChatMessage"]:hover {{
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(0,115,234,0.06) !important;
+    border-color: rgba(0,115,234,0.18) !important;
+}}
+[data-testid="stChatMessage"] [data-testid="chatAvatar"] {{
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}}
+[data-testid="stChatInput"] textarea {{
+    border-radius: 14px !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--feat-bg) !important;
+    color: var(--text-primary) !important;
+    font-family: 'Outfit', sans-serif !important;
+    padding: 14px 18px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s ease !important;
+}}
+[data-testid="stChatInput"] textarea:focus {{
+    border-color: #0073ea !important;
+}}
 
 /* ── DATAFRAME ───────────────────────────────────────────────────────────── */
 [data-testid="stDataFrame"] {{ border-radius: 12px !important; overflow: hidden !important; }}
