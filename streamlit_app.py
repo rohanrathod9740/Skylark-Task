@@ -1201,6 +1201,10 @@ elif menu == "💬 AI Assistant":
         ctype, x_labels, y_vals, title = chart
         theme = get_chart_theme()
         
+        # Determine explicit dark slate or bright white colors to ensure 100% visibility
+        is_dark = st.session_state.get("dark_mode", False)
+        text_color = "#f0f2f8" if is_dark else "#0d1117"
+        
         # Round numeric values for clean layout
         y_vals_clean = [round(v, 2) if isinstance(v, (int, float)) else v for v in y_vals]
         
@@ -1212,11 +1216,19 @@ elif menu == "💬 AI Assistant":
                 showlegend=False, 
                 plot_bgcolor=theme["plot_bgcolor"], 
                 paper_bgcolor=theme["paper_bgcolor"],
-                font_color=theme["font_color"],
-                title_font_color=theme["font_color"]
+                font=dict(color=text_color, family="Outfit", size=12),
+                title=dict(font=dict(color=text_color, family="Outfit", size=16))
             )
-            fig.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
-            fig.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
+            fig.update_xaxes(
+                gridcolor=theme["grid_color"], 
+                tickfont=dict(color=text_color, size=11),
+                title_font=dict(color=text_color, size=12)
+            )
+            fig.update_yaxes(
+                gridcolor=theme["grid_color"], 
+                tickfont=dict(color=text_color, size=11),
+                title_font=dict(color=text_color, size=12)
+            )
             st.plotly_chart(fig, use_container_width=True, key=key)
         elif ctype in ("pie", "donut"):
             hole = 0.38 if ctype == "donut" else 0.0
@@ -1225,8 +1237,8 @@ elif menu == "💬 AI Assistant":
             fig.update_layout(
                 plot_bgcolor=theme["plot_bgcolor"], 
                 paper_bgcolor=theme["paper_bgcolor"],
-                font_color=theme["font_color"],
-                title_font_color=theme["font_color"]
+                font=dict(color=text_color, family="Outfit", size=12),
+                title=dict(font=dict(color=text_color, family="Outfit", size=16))
             )
             st.plotly_chart(fig, use_container_width=True, key=key)
 
@@ -1320,6 +1332,7 @@ elif menu == "💬 AI Assistant":
     # If chat is active, render quick actions above the text input
     if len(st.session_state.messages) > 1:
         st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:13.5px; font-weight:600; color:var(--text-secondary); margin-bottom:8px;'>Answer queries about revenue, pipeline health, sectoral performance, operational metrics</div>", unsafe_allow_html=True)
         st.caption("⚡ Quick Actions (Ask Copilot):")
         c1, c2, c3 = st.columns(3)
         CAPS = [
