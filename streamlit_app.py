@@ -490,78 +490,71 @@ h4 {{
 .stCaption {{ color: var(--text-muted) !important; }}
 
 /* ── COLLAPSE/EXPAND BUTTONS (Header vs Sidebar) ─────────────────────────── */
-/* 1. Collapsed Control Container (in header when collapsed) */
+/* Nuclear-level targeting: catch EVERY possible sidebar expand button variant */
+
+/* A. Force the collapsed control wrapper visible */
 [data-testid="collapsedControl"] {{
     opacity: 1 !important;
     visibility: visible !important;
     z-index: 999999 !important;
-}}
-[data-testid="collapsedControl"] button {{
-    color: #ffffff !important;
-    background: #0073ea !important;
-    border: 2px solid rgba(255, 255, 255, 0.35) !important;
-    border-radius: 10px !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    box-shadow: 0 0 0 3px rgba(0,115,234,0.35), 0 4px 14px rgba(0,115,234,0.5) !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
-    z-index: 999999 !important;
-}}
-[data-testid="collapsedControl"] button:hover {{
-    background: #0052cc !important;
-    box-shadow: 0 0 0 4px rgba(0,115,234,0.5), 0 6px 20px rgba(0,115,234,0.6) !important;
-    transform: scale(1.08) !important;
-}}
-[data-testid="collapsedControl"] svg {{
-    fill: #ffffff !important;
-    color: #ffffff !important;
-    stroke: #ffffff !important;
-    opacity: 1 !important;
-    width: 20px !important;
-    height: 20px !important;
+    position: relative !important;
 }}
 
-/* 2. Header bar — ensure all buttons inside header are visible */
-header[data-testid="stHeader"] {{
-    z-index: 99999 !important;
-}}
-header[data-testid="stHeader"] button {{
-    opacity: 1 !important;
-    visibility: visible !important;
-}}
-header[data-testid="stHeader"] button[kind="header"],
-header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"],
-header[data-testid="stHeader"] button[data-testid="baseButton-header"] {{
+/* B. Style ANY button inside the collapsed control or header */
+[data-testid="collapsedControl"] button,
+header button,
+header [data-testid="stToolbar"] button:first-child,
+header button[kind="header"],
+header button[data-testid="baseButton-header"],
+header button[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] {{
+    color: #ffffff !important;
     background: #0073ea !important;
-    border: 2px solid rgba(255, 255, 255, 0.35) !important;
+    border: 2px solid rgba(100, 180, 255, 0.5) !important;
     border-radius: 10px !important;
     opacity: 1 !important;
     visibility: visible !important;
+    box-shadow: 0 0 0 3px rgba(0,115,234,0.4), 0 4px 16px rgba(0,115,234,0.55) !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    z-index: 999999 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 0 0 3px rgba(0,115,234,0.35), 0 4px 14px rgba(0,115,234,0.5) !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
-    z-index: 999999 !important;
 }}
-header[data-testid="stHeader"] button[kind="header"] svg,
-header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"] svg,
-header[data-testid="stHeader"] button[data-testid="baseButton-header"] svg {{
+
+/* C. Hover state */
+[data-testid="collapsedControl"] button:hover,
+header button[kind="header"]:hover,
+header button[data-testid="baseButton-header"]:hover,
+header button[data-testid="stSidebarCollapseButton"]:hover,
+[data-testid="stSidebarCollapsedControl"] button:hover {{
+    background: #0052cc !important;
+    box-shadow: 0 0 0 4px rgba(0,115,234,0.55), 0 6px 22px rgba(0,115,234,0.65) !important;
+    transform: scale(1.1) !important;
+}}
+
+/* D. Force ALL SVGs inside any header/collapsed-control button to white */
+[data-testid="collapsedControl"] svg,
+[data-testid="collapsedControl"] button svg,
+header button svg,
+header button[kind="header"] svg,
+header button[data-testid="baseButton-header"] svg,
+header button[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {{
     fill: #ffffff !important;
     color: #ffffff !important;
     stroke: #ffffff !important;
     opacity: 1 !important;
-    width: 20px !important;
-    height: 20px !important;
+    width: 22px !important;
+    height: 22px !important;
 }}
-header[data-testid="stHeader"] button[kind="header"]:hover,
-header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"]:hover,
-header[data-testid="stHeader"] button[data-testid="baseButton-header"]:hover {{
-    background: #0052cc !important;
-    transform: scale(1.08) !important;
-    box-shadow: 0 0 0 4px rgba(0,115,234,0.5), 0 6px 20px rgba(0,115,234,0.6) !important;
+
+/* E. Ensure header itself has high z-index */
+header[data-testid="stHeader"],
+header {{
+    z-index: 99999 !important;
 }}
 
 /* 3. Sidebar Collapse Button (in sidebar when expanded) */
