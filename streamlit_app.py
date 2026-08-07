@@ -889,7 +889,108 @@ def resolve_query(query: str) -> tuple:
 # ─────────────────────────────────────────────────────────────────────────────
 # Sidebar
 # ─────────────────────────────────────────────────────────────────────────────
-st.sidebar.markdown("## 🚁 Skylark Drones\n*BI AGENT*")
+st.sidebar.markdown("""
+<div style="text-align: center; margin-bottom: -15px; margin-top: -15px;">
+    <canvas id="neural-orb" width="160" height="160" style="background:transparent; cursor:pointer; filter: drop-shadow(0 0 20px rgba(99,102,241,0.25));"></canvas>
+</div>
+<script>
+(function() {
+    var canvas = document.getElementById("neural-orb");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var width = canvas.width;
+    var height = canvas.height;
+    var centerX = width / 2;
+    var centerY = height / 2;
+    var radius = 55;
+    var angle = 0;
+    
+    var particles = [];
+    for (var i = 0; i < 32; i++) {
+        particles.push({
+            x: centerX + (Math.random() - 0.5) * 50,
+            y: centerY + (Math.random() - 0.5) * 50,
+            r: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 1.0,
+            speedY: (Math.random() - 0.5) * 1.0,
+            phase: Math.random() * Math.PI
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        
+        var radGlow = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, radius + 15);
+        radGlow.addColorStop(0, "rgba(99, 102, 241, 0.12)");
+        radGlow.addColorStop(0.5, "rgba(168, 85, 247, 0.05)");
+        radGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = radGlow;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius + 15, 0, Math.PI * 2);
+        ctx.fill();
+
+        angle += 0.015;
+        var pulseRadius = radius + Math.sin(angle * 2.2) * 2;
+        var shellGlow = ctx.createRadialGradient(centerX, centerY, radius - 15, centerX, centerY, pulseRadius);
+        shellGlow.addColorStop(0, "rgba(99, 102, 241, 0)");
+        shellGlow.addColorStop(0.8, "rgba(99, 102, 241, 0.12)");
+        shellGlow.addColorStop(0.95, "rgba(168, 85, 247, 0.55)");
+        shellGlow.addColorStop(1, "rgba(255, 255, 255, 0.85)");
+        
+        ctx.strokeStyle = shellGlow;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.lineWidth = 0.5;
+        for (var i = 0; i < particles.length; i++) {
+            var p1 = particles[i];
+            p1.x += p1.speedX;
+            p1.y += p1.speedY;
+            p1.phase += 0.03;
+            
+            var dx = p1.x - centerX;
+            var dy = p1.y - centerY;
+            var dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist > radius - 6) {
+                var angleToCenter = Math.atan2(dy, dx);
+                p1.x = centerX + Math.cos(angleToCenter) * (radius - 6);
+                p1.y = centerY + Math.sin(angleToCenter) * (radius - 6);
+                p1.speedX *= -1;
+                p1.speedY *= -1;
+            }
+
+            var currentRadius = p1.r * (1 + Math.sin(p1.phase) * 0.25);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+            ctx.shadowColor = "rgba(99, 102, 241, 0.7)";
+            ctx.shadowBlur = 3;
+            ctx.beginPath();
+            ctx.arc(p1.x, p1.y, currentRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            for (var j = i + 1; j < particles.length; j++) {
+                var p2 = particles[j];
+                var lineDist = Math.sqrt((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
+                if (lineDist < 25) {
+                    var alpha = (1 - lineDist / 25) * 0.4;
+                    ctx.strokeStyle = "rgba(168, 85, 247, " + alpha + ")";
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        requestAnimationFrame(animate);
+    }
+    animate();
+})();
+</script>
+""", unsafe_allow_html=True)
+st.sidebar.markdown("<div style='text-align:center; font-weight:800; font-size:15px; letter-spacing:0.5px; color:#ffffff;'>🚁 SKYLARK DRONES</div><div style='text-align:center; font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-top:2px; margin-bottom:15px;'>Executive BI Copilot</div>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 PAGES = [
     "🏠 Overview",
