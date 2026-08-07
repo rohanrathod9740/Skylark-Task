@@ -1459,7 +1459,7 @@ elif menu == "📊 Executive Dashboard":
         ))
         fig_bot.update_layout(
             title=dict(text="Invoicing & Outstanding Receivables Bottlenecks by Client (INR)", font=dict(size=14, color=theme["font_color"])),
-            bmode="group",
+            barmode="group",
             plot_bgcolor=theme["plot_bgcolor"],
             paper_bgcolor=theme["paper_bgcolor"],
             font_color=theme["font_color"],
