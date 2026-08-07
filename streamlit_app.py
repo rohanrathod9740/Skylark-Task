@@ -1300,28 +1300,24 @@ elif menu == "📊 Executive Dashboard":
     col_l, col_r = st.columns(2)
 
     with col_l:
-        st.markdown("#### Pipeline Status Mix")
         df = pd.DataFrame(qdb("SELECT deal_status, COUNT(*) as count, SUM(masked_deal_value) as value FROM deals GROUP BY deal_status"))
         cmap = {"Open": "#0073ea", "Won": "#00c875", "Dead": "#df2f4a", "On Hold": "#fdab3d"}
-        fig  = px.pie(df, values="count", names="deal_status", hole=.38, color="deal_status", color_discrete_map=cmap)
+        fig  = px.pie(df, values="count", names="deal_status", hole=.38, color="deal_status", color_discrete_map=cmap, title="Pipeline Status Mix")
         fig.update_layout(
             plot_bgcolor=theme["plot_bgcolor"], 
             paper_bgcolor=theme["paper_bgcolor"],
-            font_color=theme["font_color"],
-            title_font_color=theme["font_color"]
+            font_color=theme["font_color"]
         )
         st.plotly_chart(fig, use_container_width=True)
 
     with col_r:
-        st.markdown("#### Sectoral Pipeline Value")
         df2 = pd.DataFrame(qdb("SELECT sector_service, SUM(masked_deal_value) as value FROM deals GROUP BY sector_service ORDER BY value DESC"))
-        fig2 = px.bar(df2, x="sector_service", y="value", color="sector_service", labels={"value": "₹ Value", "sector_service": "Sector"})
+        fig2 = px.bar(df2, x="sector_service", y="value", color="sector_service", labels={"value": "₹ Value", "sector_service": "Sector"}, title="Sectoral Pipeline Value")
         fig2.update_layout(
             showlegend=False, 
             plot_bgcolor=theme["plot_bgcolor"], 
             paper_bgcolor=theme["paper_bgcolor"],
-            font_color=theme["font_color"],
-            title_font_color=theme["font_color"]
+            font_color=theme["font_color"]
         )
         fig2.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
         fig2.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
@@ -1329,30 +1325,26 @@ elif menu == "📊 Executive Dashboard":
 
     col3, col4 = st.columns(2)
     with col3:
-        st.markdown("#### Work Orders Execution Status")
         df3 = pd.DataFrame(qdb("SELECT execution_status, COUNT(*) as count FROM work_orders GROUP BY execution_status ORDER BY count DESC"))
-        fig3 = px.bar(df3, x="execution_status", y="count", color="execution_status", labels={"count": "Orders", "execution_status": "Status"})
+        fig3 = px.bar(df3, x="execution_status", y="count", color="execution_status", labels={"count": "Orders", "execution_status": "Status"}, title="Work Orders Execution Status")
         fig3.update_layout(
             showlegend=False, 
             plot_bgcolor=theme["plot_bgcolor"], 
             paper_bgcolor=theme["paper_bgcolor"],
-            font_color=theme["font_color"],
-            title_font_color=theme["font_color"]
+            font_color=theme["font_color"]
         )
         fig3.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
         fig3.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
         st.plotly_chart(fig3, use_container_width=True)
 
     with col4:
-        st.markdown("#### Top Owners by Won Revenue")
         df4 = pd.DataFrame(qdb("SELECT owner_code, SUM(masked_deal_value) as value FROM deals WHERE deal_status='Won' GROUP BY owner_code ORDER BY value DESC LIMIT 5"))
-        fig4 = px.bar(df4, x="owner_code", y="value", color="owner_code", labels={"value": "₹ Revenue", "owner_code": "Owner"})
+        fig4 = px.bar(df4, x="owner_code", y="value", color="owner_code", labels={"value": "₹ Revenue", "owner_code": "Owner"}, title="Top Owners by Won Revenue")
         fig4.update_layout(
             showlegend=False, 
             plot_bgcolor=theme["plot_bgcolor"], 
             paper_bgcolor=theme["paper_bgcolor"],
-            font_color=theme["font_color"],
-            title_font_color=theme["font_color"]
+            font_color=theme["font_color"]
         )
         fig4.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
         fig4.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
