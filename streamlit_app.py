@@ -389,6 +389,19 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
 }}
 .stTextInput input::placeholder {{ color: var(--text-muted) !important; }}
 
+/* ── FEATURE CARD NAV BUTTONS ────────────────────────────────────────────── */
+/* Target the feat_btn_ buttons specifically to style them as link-style arrows */
+[data-testid="stBaseButton-secondary"][key^="feat_btn_"] {{
+    background: transparent !important;
+    border: none !important;
+    color: #0073ea !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    padding: 2px 0 !important;
+    box-shadow: none !important;
+    text-align: left !important;
+}}
+
 /* ── TABS ────────────────────────────────────────────────────────────────── */
 .stTabs [data-baseweb="tab-list"] {{
     background: var(--tab-bg);
@@ -734,13 +747,20 @@ def resolve_query(query: str):
 # ─────────────────────────────────────────────────────────────────────────────
 st.sidebar.markdown("## 🚁 Skylark Drones\n*BI AGENT*")
 st.sidebar.markdown("---")
-menu = st.sidebar.radio("Navigate", [
+PAGES = [
     "🏠 Overview",
     "💬 AI Assistant",
     "📊 Executive Dashboard",
     "🔍 Data Explorer",
     "📄 Leadership Update"
-])
+]
+if "active_page" not in st.session_state:
+    st.session_state.active_page = "🏠 Overview"
+
+menu = st.sidebar.radio("Navigate", PAGES,
+    index=PAGES.index(st.session_state.active_page),
+    key="sidebar_nav")
+st.session_state.active_page = menu
 st.sidebar.markdown("---")
 
 # ── Theme Toggle ──────────────────────────────────────────────────────────
@@ -822,27 +842,33 @@ if menu == "🏠 Overview":
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Feature Grid ───────────────────────────────────────────────────────────
+    # ── Feature Grid (Clickable) ────────────────────────────────────────────────
     st.markdown('<div class="section-header">⚡ What This Agent Can Do</div>', unsafe_allow_html=True)
 
     features = [
-        ("💬", "rgba(0,115,234,0.1)", "Natural Language Queries",
-         "Ask any business question in plain English. Pipeline health, sector breakdowns, client rankings — answered instantly."),
-        ("📊", "rgba(0,200,117,0.1)", "Executive Dashboard",
-         "Live visual KPI charts: pipeline breakdown by status, sectoral performance, top owners, and work order execution rates."),
+        ("💬", "rgba(0,115,234,0.1)",  "Natural Language Queries",
+         "Ask any business question in plain English. Pipeline health, sector breakdowns, client rankings — answered instantly.",
+         "💬 AI Assistant"),
+        ("📊", "rgba(0,200,117,0.1)",  "Executive Dashboard",
+         "Live visual KPI charts: pipeline breakdown by status, sectoral performance, top owners, and work order execution rates.",
+         "📊 Executive Dashboard"),
         ("📄", "rgba(255,171,61,0.1)", "Leadership Report Generator",
-         "Auto-generated executive summaries with probability-weighted revenue forecasts. Download as Markdown in one click."),
-        ("🔍", "rgba(98,79,226,0.1)", "Interactive Data Explorer",
-         "Browse, search, and filter all 344 deals and 176 work orders with real-time keyword search and CSV export."),
-        ("🤖", "rgba(0,163,191,0.1)", "Gemini 2.0 AI Engine",
-         "Powered by Google Gemini 2.0 Flash for contextual answers. Falls back to guaranteed SQL resolver for exact figures."),
-        ("⚡", "rgba(223,47,74,0.1)", "Monday.com Integration",
-         "Connects to Monday.com boards via API. Automatically falls back to local SQLite cache when offline."),
+         "Auto-generated executive summaries with probability-weighted revenue forecasts. Download as Markdown in one click.",
+         "📄 Leadership Update"),
+        ("🔍", "rgba(98,79,226,0.1)",  "Interactive Data Explorer",
+         "Browse, search, and filter all 344 deals and 176 work orders with real-time keyword search and CSV export.",
+         "🔍 Data Explorer"),
+        ("🤖", "rgba(0,163,191,0.1)",  "Gemini 2.0 AI Engine",
+         "Powered by Google Gemini 2.0 Flash for contextual answers. Falls back to guaranteed SQL resolver for exact figures.",
+         "💬 AI Assistant"),
+        ("⚡", "rgba(223,47,74,0.1)",  "Monday.com Integration",
+         "Connects to Monday.com boards via API. Automatically falls back to local SQLite cache when offline.",
+         "💬 AI Assistant"),
     ]
 
     c1, c2, c3 = st.columns(3)
     feature_cols = [c1, c2, c3]
-    for i, (icon, bg, title, desc) in enumerate(features):
+    for i, (icon, bg, title, desc, target) in enumerate(features):
         with feature_cols[i % 3]:
             st.markdown(f"""
             <div class="feat-card">
@@ -850,8 +876,11 @@ if menu == "🏠 Overview":
                 <h4>{title}</h4>
                 <p>{desc}</p>
             </div>
-            <br>
             """, unsafe_allow_html=True)
+            if st.button(f"Open {title} →", key=f"feat_btn_{i}", use_container_width=True):
+                st.session_state.active_page = target
+                st.rerun()
+            st.markdown("<br>", unsafe_allow_html=True)
 
     # ── Bottom Row: Activity Log + Quick Start ─────────────────────────────────
     st.markdown('<div class="section-header">🕐 System Status</div>', unsafe_allow_html=True)
