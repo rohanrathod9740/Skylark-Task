@@ -1532,10 +1532,10 @@ elif menu == "📊 Executive Dashboard":
     st.markdown("""
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:18px 24px; box-shadow:0 4px 20px rgba(0,0,0,0.08); color:#ffffff !important;">
         <div>
-            <h1 style="margin:0; font-size:24px; font-weight:800; color:#ffffff !important; display:flex; align-items:center; gap:8px;">
+            <div style="margin:0; font-size:24px; font-weight:800; color:#ffffff !important; display:flex; align-items:center; gap:8px; font-family:'Outfit', sans-serif;">
                 🚁 Executive Business Intelligence Dashboard
-            </h1>
-            <p style="margin:4px 0 0; font-size:12px; color:rgba(255,255,255,0.7) !important;">Current Quarter (Q3) · Friday Real-Time Cache Sync · Data Integrity Verified</p>
+            </div>
+            <div style="margin:4px 0 0; font-size:12px; color:rgba(255,255,255,0.7) !important; font-family:'Outfit', sans-serif;">Current Quarter (Q3) · Friday Real-Time Cache Sync · Data Integrity Verified</div>
         </div>
         <div style="display:flex; gap:12px;">
             <div style="background:rgba(0,200,117,0.2) !important; border:1px solid rgba(0,200,117,0.3) !important; padding:6px 14px; border-radius:30px; font-size:11px; font-weight:700; color:#00ff88 !important; letter-spacing:0.3px;">
