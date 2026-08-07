@@ -1,170 +1,61 @@
 # 🚁 Skylark Drones — Monday.com Business Intelligence Agent
 
-> **Submission by Rohan Rathod** — Full-Stack AI Agent Assignment
+> **An AI-powered Business Intelligence Agent built for Skylark Drones to translate natural language into real-time Monday.com metrics.**
 
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Streamlit%20Cloud-FF4B4B?style=for-the-badge)](https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/)
 [![GitHub](https://img.shields.io/badge/📦%20Source-GitHub-181717?style=for-the-badge)](https://github.com/rohanrathod9740/Skylark-Task)
 
----
-
-## 🎯 What This Project Does
-
-This is an **AI-powered Business Intelligence Agent** built for Skylark Drones. It allows founders and executives to ask plain-English questions and get instant, data-driven answers from their Monday.com boards — without writing any SQL or pulling reports manually.
-
-**Example questions it answers:**
-- *"How is our pipeline looking for the energy sector?"*
-- *"What is our pending billed value from work orders?"*
-- *"Give me a comprehensive leadership summary update."*
-- *"Who are our top enterprise clients by pipeline value?"*
-- *"Show me delayed and stuck work orders."*
+This BI Agent provides founders and executives with plain-English insights from sales pipelines (Deals Board) and operations records (Work Orders Board), bypassing manual reports or complex database queries.
 
 ---
 
-## 🚀 Live Demo (No Setup Needed)
+## 🎯 Key Capabilities
 
-👉 **[https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/](https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/)**
-
-Open the link on any device — no login, no install, works instantly.
+- **Dynamic Text-to-SQL Agent**: Parses complex natural language requests, generates SQLite queries, executes them against the cache, and synthesizes answers.
+- **Dual-Engine Resolution**: Uses Gemini 2.0 Flash when online; seamlessly falls back to a regex-based SQL template parser when offline.
+- **Conversational Memory**: Maintains the last 5 turns of conversation context, resolving pronouns like *"Show Mining deals"* followed by *"What is their value?"*.
+- **SQL Safety Guardrail**: A strict whitelist parsing layer blocks non-`SELECT` statements and commands (`DROP`, `DELETE`, etc.) to prevent database exploits.
+- **Proactive Executive Insights**: The agent provides confidence levels, flags data quality anomalies (e.g. missing dates, negative receivable offsets), and lists actionable takeaways.
+- **Conversational Charting**: Plotly charts (bar, pie, donut) are dynamically generated inside the chat thread to visualize query statistics.
+- **Executive Dashboard & Exporter**: Features a dedicated visual analytics dashboard and an automated executive markdown report generator.
 
 ---
 
 ## 📐 System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│               Streamlit Cloud (Python)                  │
-│  ┌─────────┐ ┌──────────────┐ ┌──────────────────────┐  │
-│  │Overview │ │ AI Assistant │ │  Leadership Report   │  │
-│  │Dashboard│ │  (Chat UI)   │ │  (Auto-generated)    │  │
-│  └────┬────┘ └──────┬───────┘ └──────────┬───────────┘  │
-│       │             │                    │               │
-│       └─────────────┴────────────────────┘               │
-│                         │                                │
-│              ┌──────────▼──────────┐                     │
-│              │   Query Resolver    │                     │
-│              │ (Rule-based + SQL)  │                     │
-│              └──────────┬──────────┘                     │
-│                         │                                │
-│         ┌───────────────┼────────────────┐               │
-│         ▼               ▼                ▼               │
-│   [SQLite Cache]  [Gemini 2.0 AI]  [Monday.com API]      │
-└─────────────────────────────────────────────────────────┘
-
-Also available: Node.js Express Edition (npm start → localhost:3000)
+                                  ┌──────────────────────────┐
+                                  │   Streamlit Cloud / UI   │
+                                  └────────────┬─────────────┘
+                                               │
+                                      [Natural Language]
+                                               │
+                                               ▼
+                              ┌──────────────────────────────────┐
+                              │     AI Query Routing Engine      │
+                              │ (Gemini 2.0 Flash / Fallback Regex)│
+                              └────────────────┬─────────────────┘
+                                               │
+                                          [Safe SQL]
+                                               │
+                                               ▼
+                              ┌──────────────────────────────────┐
+                              │        SQLite Cache Layer        │
+                              │      (backend/skylark.db)        │
+                              └────────────────┬─────────────────┘
+                                               │
+                                        [Data Rows]
+                                               │
+                                               ▼
+                              ┌──────────────────────────────────┐
+                              │      AI Synthesis Pipeline       │
+                              │ (Markdown + Plotly + Metadata JSON)│
+                              └──────────────────────────────────┘
 ```
 
-**Two deployment options were built:**
-| Edition | Stack | Run Command |
-|---|---|---|
-| **Streamlit (Cloud)** | Python, Streamlit, Plotly, SQLite | `streamlit run streamlit_app.py` |
-| **Node.js (Local)** | Express, Vanilla JS, Chart.js, SQLite | `npm start` → `localhost:3000` |
-
----
-
-## ✅ Deliverables Checklist
-
-| Requirement | Status | How It's Met |
-|---|---|---|
-| **Hosted Prototype** | ✅ | [Live on Streamlit Cloud](https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/) |
-| **Conversational Interface** | ✅ | Natural language chat with pill shortcuts & Gemini AI |
-| **Monday.com Integration** | ✅ | API via env vars; auto-falls back to local SQLite cache |
-| **Data Resilience** | ✅ | Handles nulls, negative values, messy formats, split tables |
-| **Business Intelligence Queries** | ✅ | 9 founder query types with exact DB answers + AI synthesis |
-| **Leadership Update Prep** | ✅ | Auto-generated report with download as `.md` |
-| **Decision Log** | ✅ | See [`decision_log.md`](./decision_log.md) |
-| **README + Architecture** | ✅ | This file |
-| **Source Code ZIP** | ✅ | [Download from GitHub](https://github.com/rohanrathod9740/Skylark-Task/archive/refs/heads/main.zip) |
-
----
-
-## 🤖 AI Agent Capabilities
-
-### Core Business Intelligence Queries
-
-The agent handles these 9 founder-level query categories with **exact database answers**:
-
-| Query Type | Example | Data Source |
-|---|---|---|
-| Pipeline Health | *"How is our pipeline looking?"* | Deals Board |
-| Revenue Forecast | *"What's our total won revenue + forecast?"* | Deals Board |
-| Energy Sector | *"Energy sector pipeline performance?"* | Deals Board |
-| Expected Revenue | *"Expected revenue from open deals?"* | Deals Board |
-| Pending Billing | *"What is our pending billed value?"* | Work Orders |
-| Delayed Work Orders | *"Show delayed and stuck work orders"* | Work Orders |
-| Operational Risks | *"Show stuck and paused projects"* | Work Orders |
-| Top Enterprise Clients | *"Who are our biggest clients?"* | Deals Board |
-| Leadership Summary | *"Give me a leadership update"* | Both Boards |
-
-### General Question Answering (Gemini AI)
-For questions outside the above categories (company info, open-ended analysis, strategy questions), the agent routes to **Gemini 2.0 Flash** with full Skylark business context injected into the prompt.
-
----
-
-## 🛡️ Data Resilience
-
-The raw data contained significant quality issues that were handled:
-
-| Issue | How Handled |
-|---|---|
-| Tables split horizontally across PDF pages | Custom row-merge alignment in `reconstruct_data.py` |
-| Inconsistent date formats (`DD/MM/YY`, `MM-DD-YYYY`, text) | Regex normalization pipeline |
-| Missing/null financial values | `COALESCE` + 0-fallback in all SQL queries |
-| Negative outstanding amounts (over-billing) | `CASE WHEN billed > po THEN 0 ELSE po-billed END` |
-| Inconsistent naming conventions | Normalized and mapped via lookup tables |
-
----
-
-## ⚙️ Monday.com Integration
-
-### Live Integration (Production)
-Configure these environment variables to connect to your real Monday.com boards:
-
-```bash
-GEMINI_API_KEY="your_gemini_api_key"
-MONDAY_API_KEY="your_monday_personal_api_token"
-MONDAY_DEALS_BOARD_ID="your_deals_board_id"
-MONDAY_WO_BOARD_ID="your_work_orders_board_id"
-```
-
-On **Streamlit Cloud**: Add these in **App Settings → Secrets** in TOML format.
-
-### Offline / Mock Mode
-If `MONDAY_API_KEY` is absent or set to `mock`, the system automatically serves data from the local SQLite cache (`backend/skylark.db`) — no configuration needed.
-
-### Board Setup Guide
-1. Obtain your **Monday.com Personal API Token** from Developer Settings.
-2. Create two boards: **Deals** and **Work Orders**.
-3. Import `deals_data.csv` and `work_orders_data.csv` into the respective boards.
-4. Copy the **Board IDs** from the board URLs and set as env vars above.
-
----
-
-## 🏃 Local Setup
-
-### Streamlit Version
-
-```bash
-pip install streamlit pandas plotly pdfplumber
-streamlit run streamlit_app.py
-```
-
-### Node.js Full-Stack Version
-
-```bash
-# Install dependencies
-npm install
-
-# Load data into SQLite (runs reconstruct_data.py + backend/database.py)
-npm run reconstruct
-
-# Launch web server
-npm start
-
-# Open in browser
-http://localhost:3000
-```
-
-**Prerequisites:** Node.js v18+, Python 3.9+
+The application is deployable in two ways:
+1. **Streamlit Edition (Production)**: Fully hosted on Streamlit Cloud.
+2. **Full-Stack Node.js Edition (Local Developer Sandbox)**: Express server serving a vanilla HTML5/JS dashboard. Queries are resolved via a spawned Python child process.
 
 ---
 
@@ -172,50 +63,78 @@ http://localhost:3000
 
 ```
 Skylark-Task/
-├── streamlit_app.py          # 🚀 Streamlit Cloud deployment (main entry)
+├── streamlit_app.py          # streamlt dashboard + chat client + agent logic
 ├── requirements.txt          # Python dependencies for Streamlit Cloud
-├── package.json              # Node.js dependencies
+├── package.json              # Express server dependencies
 │
 ├── backend/
-│   ├── server.js             # Express web server + mock Monday.com GraphQL API
-│   ├── agent_resolver.py     # AI query router (Gemini + fallback SQL engine)
-│   ├── query_agent.py        # Natural language → SQL pipeline
-│   ├── database.py           # SQLite schema creation + data loading
-│   ├── monday_client.py      # Monday.com API integration client
-│   └── skylark.db            # Pre-loaded SQLite database (344 deals, 176 WOs)
+│   ├── server.js             # Express API server + mock Monday.com GraphQL API
+│   ├── agent_resolver.py     # Local Python resolver used by server.js
+│   ├── database.py           # SQLite initialization & database seeding
+│   ├── monday_client.py      # Monday.com GraphQL API client
+│   └── skylark.db            # Local SQLite cache database
 │
 ├── frontend/
-│   ├── index.html            # Monday.com-inspired UI
-│   ├── app.js                # Interactive dashboard logic
-│   └── style.css             # Light/Dark theme, animations
+│   ├── index.html            # Monday.com-inspired UI (Express version)
+│   ├── app.js                # Frontend data rendering and chat (Express version)
+│   └── style.css             # Light/Dark mode stylesheets
 │
-├── reconstruct_data.py       # PDF data extraction + normalization pipeline
-├── deals_data.csv            # Cleaned Deals dataset
-├── work_orders_data.csv      # Cleaned Work Orders dataset
-├── decision_log.md           # Key decisions, trade-offs, assumptions
+├── reconstruct_data.py       # PDF extraction & alignment script (pdfplumber)
+├── deals_data.csv            # Reconstructed Deals dataset
+├── work_orders_data.csv      # Reconstructed Work Orders dataset
+├── decision_log.md           # Rationale, assumptions, and trade-offs log
 └── README.md                 # This file
 ```
 
 ---
 
-## 🔑 Key Design Decisions
+## 🛡️ Data Resilience
 
-> Full reasoning is documented in [`decision_log.md`](./decision_log.md)
+Raw data was reconstructed from horizontally split PDF pages and normalized to maintain high consistency:
 
-- **Two deployments** (Streamlit + Node.js) to maximize evaluator accessibility
-- **SQLite over direct API** for resilience and offline capability
-- **Rule-based resolver + Gemini** hybrid — guaranteed exact answers for founder queries, plus AI generality
-- **Leadership updates** interpreted as an auto-generated executive report workspace with live recalculation
+| Issue | Normalization Technique |
+|---|---|
+| Split Tables Across PDF Pages | Coordinates-based row alignment using `pdfplumber` |
+| Financial Values Formatting | Regex extraction to float (handling commas, letters, spaces) |
+| Missing/Null Fields | `COALESCE` or `0.0` fallbacks in database inserts and queries |
+| Over-billed Work Orders | `CASE WHEN billed > amount THEN 0 ELSE amount - billed END` offset logic |
+| Date Formats | Normalization to `YYYY-MM-DD` strings |
 
 ---
 
-## 📊 Sample Queries to Try
+## 🚀 Live Demo & Setup
 
-Open the [live demo](https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/) and type:
+### Online Demo
+👉 **[Streamlit Live Link](https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/)**
 
-- *"How is our pipeline looking?"*
-- *"What is our pending billing from work orders?"*
-- *"Show me the energy sector pipeline"*
-- *"Tell me about Skylark Drones"*
-- *"Who are our top 5 clients?"*
-- *"Give me a leadership update"*
+### Local Streamlit Setup
+```bash
+pip install streamlit pandas plotly pdfplumber
+streamlit run streamlit_app.py
+```
+
+### Local Express Full-Stack Setup
+```bash
+# Install node dependencies
+npm install
+
+# Initialize database and parse PDFs
+npm run reconstruct
+
+# Start Express server
+npm start
+```
+Go to `http://localhost:3000` in your web browser.
+
+---
+
+## 🔑 Recruiter Assessment Deliverables Checklist
+
+- [x] **Hosted Prototype Link**: Deployed at [https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/](https://skylark-task-tn4qcfwy58rtm6p8vqdckk.streamlit.app/)
+- [x] **Conversational Chat Interface**: Integrated with dynamic text-to-sql, context memory, and Plotly charting.
+- [x] **Monday.com GraphQL Integration**: Real-time board sync. Falls back to SQLite if API keys are mock/absent.
+- [x] **Messy Data Normalization Pipeline**: Reconstructed via `reconstruct_data.py` into CSV and SQLite.
+- [x] **9 Business Intelligence Queries**: Handled exactly via both AI SQL generation and local fallback regex queries.
+- [x] **Executive Update Preparation**: Structured summary report downloadable as `.md`.
+- [x] **Decision Log**: Architectural trade-offs, constraints, and decisions documented in `decision_log.md`.
+- [x] **Clean Source Code ZIP**: Available on [GitHub remote](https://github.com/rohanrathod9740/Skylark-Task).

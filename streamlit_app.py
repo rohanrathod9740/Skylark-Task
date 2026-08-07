@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import os
 import urllib.request
 import json
+import re
 from datetime import datetime
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -515,67 +516,162 @@ def qdb(sql):
     except Exception as e:
         return [{"error": str(e)}]
 
+def get_chart_theme():
+    if st.session_state.get("dark_mode", False):
+        return {
+            "plot_bgcolor": "#161b27",
+            "paper_bgcolor": "#161b27",
+            "font_color": "#f0f2f8",
+            "grid_color": "rgba(255,255,255,0.06)"
+        }
+    else:
+        return {
+            "plot_bgcolor": "#ffffff",
+            "paper_bgcolor": "#ffffff",
+            "font_color": "#0d1117",
+            "grid_color": "#f0f2f5"
+        }
+
 # ─────────────────────────────────────────────────────────────────────────────
-# Gemini API helper — falls back to local resolver on failure
+# AI Agent: Dynamic SQL Engine & Synthesis
 # ─────────────────────────────────────────────────────────────────────────────
-SKYLARK_CONTEXT = """
-You are the Skylark Drones Business Intelligence Agent — a smart, data-driven assistant embedded
-inside Skylark Drones' internal analytics dashboard.
 
-About Skylark Drones:
-- Skylark Drones is an Indian drone services company operating in sectors like Mining, Powerline,
-  Renewables, Railways, Aviation, Construction, and more.
-- They track deals (sales pipeline) and work orders (project execution) using Monday.com boards.
-- Founders and executives use this agent to get instant answers about revenue, pipeline, clients,
-  and operational performance.
-
-Database Schema:
-1. `deals` table: deal_name, owner_code, client_code, deal_status (Open/Won/Dead/On Hold),
-   masked_deal_value, closure_probability (High/Medium/Low), sector_service, deal_stage, product_deal
-2. `work_orders` table: serial_num, customer_name_code, nature_of_work, execution_status,
-   amount_excl_gst, billed_excl_gst, amount_receivable, billing_status, invoice_status,
-   bd_kam_personnel_code, sector, type_of_work
-
-You have already queried the database and the result is provided below.
-Give a concise, insightful answer with context — not just raw numbers.
-Use Indian currency formatting (₹ with Cr/Lakhs as appropriate).
-Be conversational and helpful.
-"""
-
-def call_gemini(prompt: str, db_result: str = "") -> str:
+def call_gemini_raw(prompt: str) -> str:
     api_key = st.secrets.get("GEMINI_API_KEY", "")
     if not api_key:
         return ""
+    # Call Gemini 2.0 Flash API via urllib
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-    full_prompt = SKYLARK_CONTEXT
-    if db_result:
-        full_prompt += f"\n\nDatabase Query Result:\n{db_result}\n\nUser Question: {prompt}"
-    else:
-        full_prompt += f"\n\nUser Question: {prompt}\n\n(No database query needed — answer from your context about Skylark Drones.)"
-
-    payload = {"contents": [{"parts": [{"text": full_prompt}]}]}
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
     req = urllib.request.Request(
         url,
-        data=json.dumps(payload).encode(),
+        data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
         method="POST"
     )
     try:
         with urllib.request.urlopen(req, timeout=12) as r:
-            data = json.loads(r.read().decode())
+            data = json.loads(r.read().decode("utf-8"))
             return data["candidates"][0]["content"]["parts"][0]["text"]
     except Exception:
         return ""
 
+def is_safe_sql(sql_query: str) -> bool:
+    clean = sql_query.strip().upper()
+    if not clean.startswith("SELECT"):
+        return False
+    # Strict read-only query check
+    forbidden = ["INSERT", "UPDATE", "DELETE", "DROP", "ALTER", "REPLACE", "CREATE", "TRUNCATE", "RENAME", "GRANT", "REVOKE"]
+    for f in forbidden:
+        if re.search(rf"\b{f}\b", clean):
+            return False
+    return True
+
+def call_gemini_sql(query: str, history_text: str) -> str:
+    prompt = f"""
+You are an expert SQL translator for a Monday.com Business Intelligence Agent.
+The SQLite database contains two tables:
+1. `deals` table:
+   - deal_name (text)
+   - owner_code (text)
+   - client_code (text)
+   - deal_status (text: 'Open', 'Won', 'Dead', 'On Hold')
+   - masked_deal_value (real)
+   - closure_probability (text: 'High', 'Medium', 'Low')
+   - sector_service (text: 'Mining', 'Powerline', 'Renewables', 'Railways', 'Construction', 'Tender', 'DSP', 'Aviation', 'Others')
+   - deal_stage (text)
+   - product_deal (text)
+   - created_date (text)
+   - tentative_close_date (text)
+   - close_date_actual (text)
+2. `work_orders` table:
+   - serial_num (text)
+   - customer_name_code (text)
+   - nature_of_work (text)
+   - execution_status (text: 'Completed', 'Ongoing', 'Not Started', 'Executed until current month', 'Partial Completed', 'Pause / struck')
+   - amount_excl_gst (real)
+   - billed_excl_gst (real)
+   - amount_receivable (real)
+   - billing_status (text: 'Billed', 'Not Billable', 'Partially Billed', 'Update Required', 'Stuck')
+   - invoice_status (text)
+   - bd_kam_personnel_code (text)
+   - sector (text)
+   - type_of_work (text)
+
+Conversation History Context:
+{history_text}
+
+User Query: {query}
+
+Instructions:
+1. Output ONLY a clean, valid SQLite SQL query to fetch the necessary data.
+2. Do NOT wrap the query in markdown formatting, backticks, or any explanation. Output only the raw SQL text.
+3. Be careful with filters. Use case-insensitive matching where appropriate (e.g., using LOWER() or UPPER() on columns).
+4. Handle nulls/empty values using COALESCE or CASE WHEN.
+"""
+    sql = call_gemini_raw(prompt)
+    if not sql:
+        return ""
+    # Clean up formatting
+    sql = sql.replace("```sql", "").replace("```", "").strip()
+    if sql.startswith('"') and sql.endswith('"'):
+        sql = sql[1:-1]
+    return sql
+
+def call_gemini_synthesis(query: str, sql: str, db_result: str, history_text: str) -> str:
+    prompt = f"""
+You are the Monday.com Business Intelligence Agent for Skylark Drones.
+
+User Query: "{query}"
+SQL Query Executed: "{sql}"
+Database Result: {db_result}
+
+Conversation History Context:
+{history_text}
+
+Instructions:
+1. Provide a professional, conversational response summarizing the data. Explain what the numbers mean, highlight trends, and explain any assumptions.
+2. Structure your response into three distinct parts:
+   a. The main markdown response.
+   b. A ```chart block if the data is suitable for visualization.
+   c. A ```metadata block containing structured insights.
+
+Format your output exactly as follows:
+
+[Write your conversational markdown answer here. Keep it professional, and use Indian currency format (e.g. ₹ with Cr/Lakhs) for monetary values. Identify data anomalies or caveats in the data if any, such as missing dates, null fields, or over-billing/negative values.]
+
+---
+```chart
+{{
+  "type": "bar" | "pie" | "donut",
+  "labels": ["Label1", "Label2", ...],
+  "values": [Value1, Value2, ...],
+  "title": "Chart Title"
+}}
+```
+
+```metadata
+{{
+  "confidence": "High" | "Medium" | "Low",
+  "confidence_reason": "Explain why this confidence level was chosen",
+  "anomalies": ["Any data anomaly found", ...],
+  "recommendations": ["Proactive actionable recommendation for the founder", ...],
+  "follow_ups": ["Suggested follow-up query 1", "Suggested follow-up query 2", ...]
+}}
+```
+
+Ensure the blocks are closed exactly with three backticks. Do not add any extra fields in the JSON.
+"""
+    return call_gemini_raw(prompt)
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Self-contained fallback resolver
 # ─────────────────────────────────────────────────────────────────────────────
-def resolve_query(query: str):
+def resolve_query_fallback(query: str):
     q       = query.lower()
     ans     = ""
     sql     = ""
     chart   = None
-    db_text = ""
 
     # ── 1. Pending Billing ──────────────────────────────────────────────────
     if "pending billing" in q or "pending billed" in q:
@@ -584,7 +680,6 @@ def resolve_query(query: str):
                 " FROM work_orders;")
         rows = qdb(sql)
         po, billed, pending = rows[0]["total_po"] or 0, rows[0]["total_billed"] or 0, rows[0]["pending"] or 0
-        db_text = f"Total PO: ₹{po:,.2f}, Total Billed: ₹{billed:,.2f}, Pending: ₹{pending:,.2f}"
         ans  = (f"**📊 Work Orders Pending Billing**\n\n"
                 f"- Total PO Contract Value: **₹{po/1e7:.2f} Cr**\n"
                 f"- Total Billed to Date: **₹{billed/1e7:.2f} Cr**\n"
@@ -603,7 +698,6 @@ def resolve_query(query: str):
                              ELSE 0 END) as weighted FROM deals;"""
         r   = qdb(sql)[0]
         won, op, wt = r["won"] or 0, r["open_pipe"] or 0, r["weighted"] or 0
-        db_text = f"Won: ₹{won:,.2f}, Open Pipeline: ₹{op:,.2f}, Weighted Forecast: ₹{wt:,.2f}"
         ans = (f"**📈 Revenue & Pipeline Forecast**\n\n"
                f"- **Won Revenue:** ₹{won/1e7:.2f} Cr\n"
                f"- **Open Pipeline:** ₹{op/1e7:.2f} Cr\n"
@@ -616,7 +710,6 @@ def resolve_query(query: str):
     elif any(x in q for x in ["pipeline", "pipeline health", "how is our pipeline", "deals status"]):
         sql  = "SELECT deal_status, COUNT(*) as count, SUM(masked_deal_value) as total FROM deals GROUP BY deal_status;"
         rows = qdb(sql)
-        db_text = str(rows)
         ans  = "**🔍 Sales Pipeline Health**\n\n"
         for r in rows:
             ans += f"- **{r['deal_status']}**: {r['count']} deals → ₹{(r['total'] or 0)/1e7:.2f} Cr\n"
@@ -627,7 +720,6 @@ def resolve_query(query: str):
         sql  = ("SELECT deal_status, COUNT(*) as count, SUM(masked_deal_value) as total"
                 " FROM deals WHERE LOWER(sector_service) IN ('powerline','renewables') GROUP BY deal_status;")
         rows = qdb(sql)
-        db_text = str(rows)
         ans  = "**⚡ Energy Sector Pipeline**\n\n"
         for r in rows:
             ans += f"- **{r['deal_status']}**: {r['count']} deals (₹{(r['total'] or 0)/1e7:.2f} Cr)\n"
@@ -638,7 +730,6 @@ def resolve_query(query: str):
         sql  = ("SELECT execution_status, COUNT(*) as count, SUM(amount_excl_gst) as total"
                 " FROM work_orders WHERE execution_status IN ('Pause / struck','Not Started') GROUP BY execution_status;")
         rows = qdb(sql)
-        db_text = str(rows)
         risk = sum(r["total"] or 0 for r in rows)
         ans  = "**⚠️ Delayed & At-Risk Work Orders**\n\n"
         for r in rows:
@@ -655,7 +746,6 @@ def resolve_query(query: str):
                                   ELSE 0 END) as expected FROM deals WHERE deal_status='Open';"""
         r   = qdb(sql)[0]
         tot, exp = r["total"] or 0, r["expected"] or 0
-        db_text = f"Total Open: ₹{tot:,.2f}, Expected: ₹{exp:,.2f}"
         ans = (f"**💰 Expected Revenue from Open Deals**\n\n"
                f"- Total Open Pipeline: **₹{tot/1e7:.2f} Cr**\n"
                f"- **Expected Revenue (probability-adjusted): ₹{exp/1e7:.2f} Cr**\n"
@@ -667,7 +757,6 @@ def resolve_query(query: str):
         sql  = ("SELECT serial_num, customer_name_code, nature_of_work, amount_excl_gst, execution_status"
                 " FROM work_orders WHERE execution_status='Pause / struck' OR billing_status='Stuck' LIMIT 10;")
         rows = qdb(sql)
-        db_text = str(rows)
         ans  = "**⚡ Operational Risks & Stuck Projects**\n\n"
         for r in rows:
             ans += f"- **{r['serial_num']}** | {r['customer_name_code']} | {r['nature_of_work']} → *{r['execution_status']}* (₹{(r['amount_excl_gst'] or 0)/1e5:.2f} L)\n"
@@ -677,7 +766,6 @@ def resolve_query(query: str):
         sql  = ("SELECT client_code, SUM(masked_deal_value) as total, COUNT(*) as count"
                 " FROM deals GROUP BY client_code ORDER BY total DESC LIMIT 5;")
         rows = qdb(sql)
-        db_text = str(rows)
         ans  = "**🏢 Top 5 Enterprise Clients by Pipeline Value**\n\n"
         for i, r in enumerate(rows, 1):
             ans += f"{i}. **{r['client_code']}** — ₹{(r['total'] or 0)/1e7:.2f} Cr across {r['count']} deals\n"
@@ -693,7 +781,6 @@ def resolve_query(query: str):
                     (SELECT SUM(amount_receivable) FROM work_orders) as receivable
                   FROM deals LIMIT 1;"""
         r = qdb(sql)[0]
-        db_text = str(r)
         ans = (f"**👑 Executive Leadership Summary**\n\n"
                f"**Sales & Pipeline**\n"
                f"- Won Revenue: **₹{(r['won'] or 0)/1e7:.2f} Cr**\n"
@@ -707,7 +794,6 @@ def resolve_query(query: str):
         sql  = ("SELECT sector_service, SUM(masked_deal_value) as value, COUNT(*) as count"
                 " FROM deals GROUP BY sector_service ORDER BY value DESC;")
         rows = qdb(sql)
-        db_text = str(rows)
         ans  = "**🌐 Pipeline by Sector**\n\n"
         for r in rows:
             ans += f"- **{r['sector_service'] or 'Other'}**: ₹{(r['value'] or 0)/1e7:.2f} Cr ({r['count']} deals)\n"
@@ -718,28 +804,72 @@ def resolve_query(query: str):
         sql  = ("SELECT execution_status, COUNT(*) as count, SUM(amount_excl_gst) as total"
                 " FROM work_orders GROUP BY execution_status ORDER BY count DESC;")
         rows = qdb(sql)
-        db_text = str(rows)
         ans  = "**🛠️ Work Orders Execution Status**\n\n"
         for r in rows:
             ans += f"- **{r['execution_status'] or 'Unknown'}**: {r['count']} orders (₹{(r['total'] or 0)/1e5:.2f} L)\n"
         chart = ("pie", [r["execution_status"] or "Unknown" for r in rows], [r["count"] for r in rows], "WO Execution Status")
 
-    # ── Fallback: try Gemini for any general question ────────────────────────
     else:
-        gemini_ans = call_gemini(query)
-        if gemini_ans:
-            return gemini_ans, "", None
         ans = ("I can answer questions about:\n\n"
                "📊 **Revenue & Pipeline** | ⚡ **Energy Sector** | ⚠️ **Delayed Work Orders**\n"
                "🏢 **Top Clients** | 💰 **Expected Revenue** | 👑 **Leadership Summary**\n"
                "🌐 **Sectoral Performance** | 🛠️ **Work Orders** | 📋 **Operational Risks**\n\n"
                "Or ask me anything about **Skylark Drones** as a company!")
 
-    # Try to enrich with Gemini
-    gemini_ans = call_gemini(query, db_text)
-    final_ans  = gemini_ans if gemini_ans else ans
+    return ans, sql, chart
 
-    return final_ans, sql, chart
+def resolve_query(query: str) -> tuple:
+    # 1. Format the conversation history (last 5 messages)
+    history_list = st.session_state.get("messages", [])
+    history_text = ""
+    for msg in history_list[-5:]:
+        if msg["role"] == "system" or "Hi! I'm the Skylark Drones BI Agent" in msg["content"]:
+            continue
+        history_text += f"{msg['role'].capitalize()}: {msg['content']}\n"
+    
+    api_key = st.secrets.get("GEMINI_API_KEY", "")
+    if api_key:
+        try:
+            # Step A: Generate SQL query
+            sql = call_gemini_sql(query, history_text)
+            if sql and is_safe_sql(sql):
+                # Step B: Run SQL query
+                data = qdb(sql)
+                if data and not (len(data) == 1 and "error" in data[0]):
+                    # Step C: Synthesize answer
+                    synthesis = call_gemini_synthesis(query, sql, json.dumps(data[:30]), history_text)
+                    if synthesis:
+                        # Step D: Parse synthesis response
+                        main_text = synthesis.split("---")[0].strip()
+                        if not main_text:
+                            main_text = synthesis
+                        
+                        # Parse chart
+                        chart_data = None
+                        chart_match = re.search(r"```chart\s*(.*?)\s*```", synthesis, re.DOTALL)
+                        if chart_match:
+                            try:
+                                cjson = json.loads(chart_match.group(1).strip())
+                                chart_data = (cjson["type"], cjson["labels"], cjson["values"], cjson["title"])
+                            except Exception:
+                                pass
+                        
+                        # Parse metadata
+                        meta_data = None
+                        meta_match = re.search(r"```metadata\s*(.*?)\s*```", synthesis, re.DOTALL)
+                        if meta_match:
+                            try:
+                                meta_data = json.loads(meta_match.group(1).strip())
+                            except Exception:
+                                pass
+                        
+                        return main_text, sql, chart_data, meta_data
+        except Exception:
+            pass
+            
+    # Fallback to local rule-based resolver
+    ans, sql, chart = resolve_query_fallback(query)
+    return ans, sql, chart, {}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -976,20 +1106,41 @@ elif menu == "💬 AI Assistant":
                         "Ask me anything — from revenue figures to operational risks, or even general questions about Skylark Drones!")
         }]
 
+
+
     def render_chart(chart):
         if not chart:
             return
         ctype, x_labels, y_vals, title = chart
+        theme = get_chart_theme()
+        
+        # Round numeric values for clean layout
+        y_vals_clean = [round(v, 2) if isinstance(v, (int, float)) else v for v in y_vals]
+        
         if ctype == "bar":
-            fig = px.bar(x=x_labels, y=y_vals, title=title,
-                         labels={"x": "", "y": "Value (₹)"},
+            fig = px.bar(x=x_labels, y=y_vals_clean, title=title,
+                         labels={"x": "", "y": "Value"},
                          color=x_labels, color_discrete_sequence=px.colors.qualitative.Bold)
-            fig.update_layout(showlegend=False, plot_bgcolor="#fff", paper_bgcolor="#fff")
+            fig.update_layout(
+                showlegend=False, 
+                plot_bgcolor=theme["plot_bgcolor"], 
+                paper_bgcolor=theme["paper_bgcolor"],
+                font_color=theme["font_color"],
+                title_font_color=theme["font_color"]
+            )
+            fig.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
+            fig.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
             st.plotly_chart(fig, use_container_width=True)
         elif ctype in ("pie", "donut"):
-            hole = .38 if ctype == "donut" else .0
-            fig  = px.pie(names=x_labels, values=y_vals, title=title, hole=hole,
+            hole = 0.38 if ctype == "donut" else 0.0
+            fig  = px.pie(names=x_labels, values=y_vals_clean, title=title, hole=hole,
                           color_discrete_sequence=px.colors.qualitative.Bold)
+            fig.update_layout(
+                plot_bgcolor=theme["plot_bgcolor"], 
+                paper_bgcolor=theme["paper_bgcolor"],
+                font_color=theme["font_color"],
+                title_font_color=theme["font_color"]
+            )
             st.plotly_chart(fig, use_container_width=True)
 
     for msg in st.session_state.messages:
@@ -997,26 +1148,84 @@ elif menu == "💬 AI Assistant":
             st.markdown(msg["content"])
             if "chart" in msg:
                 render_chart(msg["chart"])
+            
+            # Render metadata insights
+            if msg.get("confidence") or msg.get("anomalies") or msg.get("recommendations"):
+                with st.expander("💡 Proactive AI Insights"):
+                    conf = msg.get("confidence", "High")
+                    conf_reason = msg.get("confidence_reason", "")
+                    conf_color = "🟢" if conf == "High" else "🟡" if conf == "Medium" else "🔴"
+                    st.write(f"**Confidence Level:** {conf_color} {conf} — *{conf_reason}*")
+                    
+                    if msg.get("anomalies"):
+                        st.write("**Data Quality / Anomaly Warnings:**")
+                        for anomaly in msg.get("anomalies"):
+                            st.write(f"- ⚠️ {anomaly}")
+                    
+                    if msg.get("recommendations"):
+                        st.write("**Actionable Recommendations for Founder:**")
+                        for rec in msg.get("recommendations"):
+                            st.write(f"- 💡 {rec}")
+                            
             if "sql" in msg and msg["sql"]:
                 with st.expander("🗄️ SQL Query Used"):
                     st.code(msg["sql"], language="sql")
 
-    # Handle pending query from pill click
+    # Dynamic suggestions rendering for the last assistant response
+    last_msg = st.session_state.messages[-1] if st.session_state.messages else None
+    if last_msg and last_msg.get("role") == "assistant" and last_msg.get("follow_ups"):
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.caption("🔍 Suggested follow-up analysis:")
+        cols = st.columns(min(len(last_msg["follow_ups"]), 3))
+        for idx, q_ex in enumerate(last_msg["follow_ups"][:3]):
+            if cols[idx].button(q_ex, key=f"fup_{idx}", use_container_width=True):
+                st.session_state.pending_query = q_ex
+                st.rerun()
+
+    # Handle pending query from click
     if "pending_query" in st.session_state:
         prompt = st.session_state.pop("pending_query")
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
         with st.chat_message("assistant"):
-            with st.spinner("Analyzing data..."):
-                ans, sql, chart = resolve_query(prompt)
+            with st.spinner("Analyzing..."):
+                ans, sql, chart, metadata = resolve_query(prompt)
             st.markdown(ans)
             if chart:
                 render_chart(chart)
+            
+            # Show insights
+            if metadata.get("confidence") or metadata.get("anomalies") or metadata.get("recommendations"):
+                with st.expander("💡 Proactive AI Insights"):
+                    conf = metadata.get("confidence", "High")
+                    conf_reason = metadata.get("confidence_reason", "")
+                    conf_color = "🟢" if conf == "High" else "🟡" if conf == "Medium" else "🔴"
+                    st.write(f"**Confidence Level:** {conf_color} {conf} — *{conf_reason}*")
+                    
+                    if metadata.get("anomalies"):
+                        st.write("**Data Quality / Anomaly Warnings:**")
+                        for anomaly in metadata.get("anomalies"):
+                            st.write(f"- ⚠️ {anomaly}")
+                    
+                    if metadata.get("recommendations"):
+                        st.write("**Actionable Recommendations for Founder:**")
+                        for rec in metadata.get("recommendations"):
+                            st.write(f"- 💡 {rec}")
+                            
             if sql:
                 with st.expander("🗄️ SQL Query Used"):
                     st.code(sql, language="sql")
-        obj = {"role": "assistant", "content": ans, "sql": sql}
+        obj = {
+            "role": "assistant", 
+            "content": ans, 
+            "sql": sql,
+            "confidence": metadata.get("confidence", "High"),
+            "confidence_reason": metadata.get("confidence_reason", ""),
+            "anomalies": metadata.get("anomalies", []),
+            "recommendations": metadata.get("recommendations", []),
+            "follow_ups": metadata.get("follow_ups", [])
+        }
         if chart:
             obj["chart"] = chart
         st.session_state.messages.append(obj)
@@ -1028,17 +1237,46 @@ elif menu == "💬 AI Assistant":
             st.markdown(prompt)
         with st.chat_message("assistant"):
             with st.spinner("Analyzing..."):
-                ans, sql, chart = resolve_query(prompt)
+                ans, sql, chart, metadata = resolve_query(prompt)
             st.markdown(ans)
             if chart:
                 render_chart(chart)
+            
+            # Show insights
+            if metadata.get("confidence") or metadata.get("anomalies") or metadata.get("recommendations"):
+                with st.expander("💡 Proactive AI Insights"):
+                    conf = metadata.get("confidence", "High")
+                    conf_reason = metadata.get("confidence_reason", "")
+                    conf_color = "🟢" if conf == "High" else "🟡" if conf == "Medium" else "🔴"
+                    st.write(f"**Confidence Level:** {conf_color} {conf} — *{conf_reason}*")
+                    
+                    if metadata.get("anomalies"):
+                        st.write("**Data Quality / Anomaly Warnings:**")
+                        for anomaly in metadata.get("anomalies"):
+                            st.write(f"- ⚠️ {anomaly}")
+                    
+                    if metadata.get("recommendations"):
+                        st.write("**Actionable Recommendations for Founder:**")
+                        for rec in metadata.get("recommendations"):
+                            st.write(f"- 💡 {rec}")
+                            
             if sql:
                 with st.expander("🗄️ SQL Query Used"):
                     st.code(sql, language="sql")
-        obj = {"role": "assistant", "content": ans, "sql": sql}
+        obj = {
+            "role": "assistant", 
+            "content": ans, 
+            "sql": sql,
+            "confidence": metadata.get("confidence", "High"),
+            "confidence_reason": metadata.get("confidence_reason", ""),
+            "anomalies": metadata.get("anomalies", []),
+            "recommendations": metadata.get("recommendations", []),
+            "follow_ups": metadata.get("follow_ups", [])
+        }
         if chart:
             obj["chart"] = chart
         st.session_state.messages.append(obj)
+        st.rerun()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 3. EXECUTIVE DASHBOARD
@@ -1057,7 +1295,8 @@ elif menu == "📊 Executive Dashboard":
     c3.metric("🧾 Total Billed",      f"₹{billed/1e5:.2f} L")
     c4.metric("📥 Outstanding AR",    f"₹{ar/1e5:.2f} L")
 
-    st.markdown("---")
+    theme = get_chart_theme()
+
     col_l, col_r = st.columns(2)
 
     with col_l:
@@ -1065,14 +1304,27 @@ elif menu == "📊 Executive Dashboard":
         df = pd.DataFrame(qdb("SELECT deal_status, COUNT(*) as count, SUM(masked_deal_value) as value FROM deals GROUP BY deal_status"))
         cmap = {"Open": "#0073ea", "Won": "#00c875", "Dead": "#df2f4a", "On Hold": "#fdab3d"}
         fig  = px.pie(df, values="count", names="deal_status", hole=.38, color="deal_status", color_discrete_map=cmap)
-        fig.update_layout(plot_bgcolor="#fff", paper_bgcolor="#fff")
+        fig.update_layout(
+            plot_bgcolor=theme["plot_bgcolor"], 
+            paper_bgcolor=theme["paper_bgcolor"],
+            font_color=theme["font_color"],
+            title_font_color=theme["font_color"]
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     with col_r:
         st.markdown("#### Sectoral Pipeline Value")
         df2 = pd.DataFrame(qdb("SELECT sector_service, SUM(masked_deal_value) as value FROM deals GROUP BY sector_service ORDER BY value DESC"))
         fig2 = px.bar(df2, x="sector_service", y="value", color="sector_service", labels={"value": "₹ Value", "sector_service": "Sector"})
-        fig2.update_layout(showlegend=False, plot_bgcolor="#fff", paper_bgcolor="#fff")
+        fig2.update_layout(
+            showlegend=False, 
+            plot_bgcolor=theme["plot_bgcolor"], 
+            paper_bgcolor=theme["paper_bgcolor"],
+            font_color=theme["font_color"],
+            title_font_color=theme["font_color"]
+        )
+        fig2.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
+        fig2.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
         st.plotly_chart(fig2, use_container_width=True)
 
     col3, col4 = st.columns(2)
@@ -1080,14 +1332,30 @@ elif menu == "📊 Executive Dashboard":
         st.markdown("#### Work Orders Execution Status")
         df3 = pd.DataFrame(qdb("SELECT execution_status, COUNT(*) as count FROM work_orders GROUP BY execution_status ORDER BY count DESC"))
         fig3 = px.bar(df3, x="execution_status", y="count", color="execution_status", labels={"count": "Orders", "execution_status": "Status"})
-        fig3.update_layout(showlegend=False, plot_bgcolor="#fff", paper_bgcolor="#fff")
+        fig3.update_layout(
+            showlegend=False, 
+            plot_bgcolor=theme["plot_bgcolor"], 
+            paper_bgcolor=theme["paper_bgcolor"],
+            font_color=theme["font_color"],
+            title_font_color=theme["font_color"]
+        )
+        fig3.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
+        fig3.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
         st.plotly_chart(fig3, use_container_width=True)
 
     with col4:
         st.markdown("#### Top Owners by Won Revenue")
         df4 = pd.DataFrame(qdb("SELECT owner_code, SUM(masked_deal_value) as value FROM deals WHERE deal_status='Won' GROUP BY owner_code ORDER BY value DESC LIMIT 5"))
         fig4 = px.bar(df4, x="owner_code", y="value", color="owner_code", labels={"value": "₹ Revenue", "owner_code": "Owner"})
-        fig4.update_layout(showlegend=False, plot_bgcolor="#fff", paper_bgcolor="#fff")
+        fig4.update_layout(
+            showlegend=False, 
+            plot_bgcolor=theme["plot_bgcolor"], 
+            paper_bgcolor=theme["paper_bgcolor"],
+            font_color=theme["font_color"],
+            title_font_color=theme["font_color"]
+        )
+        fig4.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
+        fig4.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
         st.plotly_chart(fig4, use_container_width=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1100,30 +1368,50 @@ elif menu == "🔍 Data Explorer":
     with tab_d:
         df_d = pd.DataFrame(qdb("SELECT * FROM deals"))
         c1, c2 = st.columns([2, 1])
-        search    = c1.text_input("🔍 Search", placeholder="Name, owner, client, sector…", key="sd")
+        search    = c1.text_input("🔍 Search Deals", placeholder="Name, owner, client, sector…", key="sd")
         statuses  = ["All"] + sorted(df_d["deal_status"].dropna().unique().tolist())
-        sf        = c2.selectbox("Status", statuses, key="fds")
+        sf        = c2.selectbox("Deal Status Filter", statuses, key="fds")
         if search:
             df_d = df_d[df_d.apply(lambda r: r.astype(str).str.contains(search, case=False).any(), axis=1)]
         if sf != "All":
             df_d = df_d[df_d["deal_status"] == sf]
-        st.dataframe(df_d, use_container_width=True, height=460)
-        st.caption(f"Showing **{len(df_d)}** records")
-        st.download_button("📥 Export CSV", df_d.to_csv(index=False), "deals_export.csv", "text/csv")
+        
+        if df_d.empty:
+            st.markdown("""
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:18px; padding:48px; text-align:center; margin:20px 0; box-shadow:0 4px 12px var(--border);">
+                <div style="font-size:40px; margin-bottom:12px;">🔍</div>
+                <h4 style="margin-top:0; color:var(--text-primary);">No matching deals found</h4>
+                <p style="color:var(--text-muted); margin-bottom:0; font-size:13px;">Adjust your keyword search or clear the status filter to browse all records.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.dataframe(df_d, use_container_width=True, height=460)
+            st.caption(f"Showing **{len(df_d)}** deals")
+            st.download_button("📥 Export Deals CSV", df_d.to_csv(index=False), "deals_export.csv", "text/csv")
 
     with tab_w:
         df_w = pd.DataFrame(qdb("SELECT * FROM work_orders"))
         c1, c2 = st.columns([2, 1])
-        search_w = c1.text_input("🔍 Search", placeholder="Customer, work type…", key="sw")
+        search_w = c1.text_input("🔍 Search Work Orders", placeholder="Customer, work type…", key="sw")
         execs    = ["All"] + sorted(df_w["execution_status"].dropna().unique().tolist())
-        ef       = c2.selectbox("Execution Status", execs, key="few")
+        ef       = c2.selectbox("Work Order Execution Status Filter", execs, key="few")
         if search_w:
             df_w = df_w[df_w.apply(lambda r: r.astype(str).str.contains(search_w, case=False).any(), axis=1)]
         if ef != "All":
             df_w = df_w[df_w["execution_status"] == ef]
-        st.dataframe(df_w, use_container_width=True, height=460)
-        st.caption(f"Showing **{len(df_w)}** records")
-        st.download_button("📥 Export CSV", df_w.to_csv(index=False), "work_orders_export.csv", "text/csv")
+            
+        if df_w.empty:
+            st.markdown("""
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:18px; padding:48px; text-align:center; margin:20px 0; box-shadow:0 4px 12px var(--border);">
+                <div style="font-size:40px; margin-bottom:12px;">📋</div>
+                <h4 style="margin-top:0; color:var(--text-primary);">No matching work orders found</h4>
+                <p style="color:var(--text-muted); margin-bottom:0; font-size:13px;">Adjust your keyword search or clear the status filter to browse all records.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.dataframe(df_w, use_container_width=True, height=460)
+            st.caption(f"Showing **{len(df_w)}** work orders")
+            st.download_button("📥 Export Work Orders CSV", df_w.to_csv(index=False), "work_orders_export.csv", "text/csv")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 5. LEADERSHIP UPDATE
