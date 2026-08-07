@@ -928,6 +928,20 @@ def resolve_query(query: str) -> tuple:
                                 pass
                         
                         return main_text, sql, chart_data, meta_data
+            
+            # Step E: Fallback for general/outside query when API is online but SQL fails or is not applicable
+            general_prompt = f"""
+            You are a helpful Business Intelligence Copilot.
+            The user is asking a general, calculations, or outside question: "{query}"
+            
+            Conversation History Context:
+            {history_text}
+            
+            Provide a helpful, direct, and concise answer to the user's question. If the user asks a general knowledge query (e.g. geography, history, general business concepts, math, coding, or any general facts), answer it directly. Keep it professional.
+            """
+            general_ans = call_gemini_raw(general_prompt)
+            if general_ans:
+                return general_ans.strip(), "", None, {}
         except Exception:
             pass
             
@@ -1479,7 +1493,7 @@ elif menu == "💬 AI Assistant":
                 st.session_state.pending_query = query
                 st.rerun()
 
-    if prompt := st.chat_input("Ask about revenue, pipeline, Skylark Drones, or any BI question…"):
+    if prompt := st.chat_input("Ask about revenue, pipeline, or ask me any general question…"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
