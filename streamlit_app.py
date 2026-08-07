@@ -752,7 +752,7 @@ def resolve_query_fallback(query: str):
         chart = ("bar", ["Total Billed", "Pending Billing"], [billed, pending], "Billing Status Breakdown")
 
     # ── 2. Revenue / Forecast ───────────────────────────────────────────────
-    elif any(x in q for x in ["revenue forecast", "pipeline forecast", "forecast", "total won revenue"]):
+    elif any(x in q for x in ["revenue forecast", "pipeline forecast", "forecast", "total won revenue", "revenue"]) and "expected" not in q:
         sql  = """SELECT
                     SUM(CASE WHEN deal_status='Won' THEN masked_deal_value ELSE 0 END) as won,
                     SUM(CASE WHEN deal_status='Open' THEN masked_deal_value ELSE 0 END) as open_pipe,
@@ -864,7 +864,7 @@ def resolve_query_fallback(query: str):
         chart = ("bar", [r["sector_service"] or "Other" for r in rows], [r["value"] or 0 for r in rows], "Pipeline by Sector")
 
     # ── 11. Work Orders ─────────────────────────────────────────────────────
-    elif any(x in q for x in ["work order", "execution", "operations"]):
+    elif any(x in q for x in ["work order", "execution", "operations", "operational"]):
         sql  = ("SELECT execution_status, COUNT(*) as count, SUM(amount_excl_gst) as total"
                 " FROM work_orders GROUP BY execution_status ORDER BY count DESC;")
         rows = qdb(sql)
