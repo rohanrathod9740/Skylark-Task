@@ -1372,7 +1372,7 @@ elif menu == "💬 AI Assistant":
                 tickfont=dict(color=text_color, size=11),
                 title_font=dict(color=text_color, size=12)
             )
-            st.plotly_chart(fig, use_container_width=True, key=key)
+            st.plotly_chart(fig, use_container_width=True, theme=None, key=key)
         elif ctype in ("pie", "donut"):
             hole = 0.38 if ctype == "donut" else 0.0
             fig  = px.pie(names=x_labels, values=y_vals_clean, title=title, hole=hole,
@@ -1381,9 +1381,10 @@ elif menu == "💬 AI Assistant":
                 plot_bgcolor=theme["plot_bgcolor"], 
                 paper_bgcolor=theme["paper_bgcolor"],
                 font=dict(color=text_color, family="Outfit", size=12),
-                title=dict(font=dict(color=text_color, family="Outfit", size=16))
+                title=dict(font=dict(color=text_color, family="Outfit", size=16)),
+                legend=dict(font=dict(color=text_color, family="Outfit", size=11))
             )
-            st.plotly_chart(fig, use_container_width=True, key=key)
+            st.plotly_chart(fig, use_container_width=True, theme=None, key=key)
 
     # ── 3. Chat Messages Render Loop
     for idx, msg in enumerate(st.session_state.messages):
@@ -1695,7 +1696,7 @@ elif menu == "📊 Executive Dashboard":
             margin=dict(l=20, r=20, t=40, b=20),
             height=280
         )
-        st.plotly_chart(fig_rev, use_container_width=True)
+        st.plotly_chart(fig_rev, use_container_width=True, theme=None)
 
         # B. Operational Invoicing Bottlenecks by Top Clients
         df_bottlenecks = pd.DataFrame(qdb("""
@@ -1743,7 +1744,7 @@ elif menu == "📊 Executive Dashboard":
             margin=dict(l=20, r=20, t=40, b=20),
             height=300
         )
-        st.plotly_chart(fig_bot, use_container_width=True)
+        st.plotly_chart(fig_bot, use_container_width=True, theme=None)
 
     with col_right:
         # C. Business Health Gauges/Metrics
@@ -1977,7 +1978,7 @@ Operations have successfully delivered **{comp_count} work orders**, achieving a
             title=dict(font=dict(color=text_color, family="Outfit")),
             legend=dict(font=dict(color=text_color, family="Outfit"))
         )
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, use_container_width=True, theme=None)
     with cb:
         fig2 = px.bar(df_snap, x="deal_status", y="value", color="deal_status", title="Pipeline Value by Status", color_discrete_map=cmap, labels={"value": "₹ Value"})
         fig2.update_layout(
@@ -1995,4 +1996,4 @@ Operations have successfully delivered **{comp_count} work orders**, achieving a
                 tickfont=dict(color=text_color, size=10, family="Outfit")
             )
         )
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True, theme=None)
