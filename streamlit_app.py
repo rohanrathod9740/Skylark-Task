@@ -136,7 +136,7 @@ html, body, [class*="css"] {{
 .main .block-container {{ padding: 2rem 2.5rem; max-width: 1400px; }}
 
 /* Fix all paragraph and label text */
-p, span, label, div, li, td, th, caption {{
+p, span, label, li, td, th, caption {{
     color: var(--text-primary) !important;
 }}
 
@@ -445,38 +445,6 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
 /* ── CHAT ────────────────────────────────────────────────────────────────── */
 [data-testid="stChatMessageContent"] {{
     font-size: 14.5px !important; line-height: 1.7 !important;
-    color: var(--text-primary) !important;
-}}
-[data-testid="stChatMessage"] {{
-    background-color: var(--feat-bg) !important;
-    border: 1px solid var(--feat-border) !important;
-    border-radius: 18px !important;
-    padding: 14px 20px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
-    margin-bottom: 14px !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
-}}
-[data-testid="stChatMessage"]:hover {{
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 18px rgba(0,115,234,0.06) !important;
-    border-color: rgba(0,115,234,0.18) !important;
-}}
-[data-testid="stChatMessage"] [data-testid="chatAvatar"] {{
-    border-radius: 50% !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
-}}
-[data-testid="stChatInput"] textarea {{
-    border-radius: 14px !important;
-    border: 1px solid var(--border) !important;
-    background-color: var(--feat-bg) !important;
-    color: var(--text-primary) !important;
-    font-family: 'Outfit', sans-serif !important;
-    padding: 14px 18px !important;
-    font-size: 14px !important;
-    transition: border-color 0.2s ease !important;
-}}
-[data-testid="stChatInput"] textarea:focus {{
-    border-color: #0073ea !important;
 }}
 
 /* ── DATAFRAME ───────────────────────────────────────────────────────────── */
@@ -1121,17 +1089,17 @@ if menu == "🏠 Overview":
 elif menu == "💬 AI Assistant":
     # ── 1. Hero Section with Status Badges (Stripe / Vercel style)
     st.markdown("""
-    <div style="background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:22px 28px; margin-bottom:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
-        <div style="font-size:24px; font-weight:800; color:#ffffff; margin-bottom:2px;">👋 Good Evening, Rohan</div>
-        <div style="font-size:14px; font-weight:600; color:rgba(255,255,255,0.7); margin-bottom:14px;">Executive Intelligence Copilot</div>
-        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; font-size:11px; font-weight:700; color:rgba(255,255,255,0.85);">
-            <span style="background:rgba(0,200,117,0.2); color:#00ff88; padding:3px 10px; border-radius:30px;">Connected to Monday.com ✓</span>
-            <span style="color:rgba(255,255,255,0.4);">|</span>
-            <span>344 Deals</span>
-            <span style="color:rgba(255,255,255,0.4);">|</span>
-            <span>176 Work Orders</span>
-            <span style="color:rgba(255,255,255,0.4);">|</span>
-            <span style="color:rgba(255,255,255,0.6);">Last Sync • 2 min ago</span>
+    <div style="background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:22px 28px; margin-bottom:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); color:#ffffff !important;">
+        <div style="font-size:24px; font-weight:800; color:#ffffff !important; margin-bottom:2px;">👋 Good Evening, Rohan</div>
+        <div style="font-size:14px; font-weight:600; color:rgba(255,255,255,0.75) !important; margin-bottom:14px;">Executive Intelligence Copilot</div>
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; font-size:11px; font-weight:700; color:rgba(255,255,255,0.9) !important;">
+            <span style="background:rgba(0,200,117,0.2) !important; color:#00ff88 !important; padding:3px 10px; border-radius:30px;">Connected to Monday.com ✓</span>
+            <span style="color:rgba(255,255,255,0.4) !important;">|</span>
+            <span style="color:#ffffff !important;">344 Deals</span>
+            <span style="color:rgba(255,255,255,0.4) !important;">|</span>
+            <span style="color:#ffffff !important;">176 Work Orders</span>
+            <span style="color:rgba(255,255,255,0.4) !important;">|</span>
+            <span style="color:rgba(255,255,255,0.6) !important;">Last Sync • 2 min ago</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
