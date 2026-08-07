@@ -1198,7 +1198,7 @@ elif menu == "💬 AI Assistant":
 
     st.markdown("---")
 
-    def render_chart(chart):
+    def render_chart(chart, key=None):
         if not chart:
             return
         ctype, x_labels, y_vals, title = chart
@@ -1220,7 +1220,7 @@ elif menu == "💬 AI Assistant":
             )
             fig.update_xaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
             fig.update_yaxes(gridcolor=theme["grid_color"], color=theme["font_color"])
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key=key)
         elif ctype in ("pie", "donut"):
             hole = 0.38 if ctype == "donut" else 0.0
             fig  = px.pie(names=x_labels, values=y_vals_clean, title=title, hole=hole,
@@ -1231,14 +1231,14 @@ elif menu == "💬 AI Assistant":
                 font_color=theme["font_color"],
                 title_font_color=theme["font_color"]
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key=key)
 
     # ── 3. Chat Messages Render Loop
-    for msg in st.session_state.messages:
+    for idx, msg in enumerate(st.session_state.messages):
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
             if "chart" in msg:
-                render_chart(msg["chart"])
+                render_chart(msg["chart"], key=f"hist_chart_{idx}")
             
             # Render metadata insights
             if msg.get("confidence") or msg.get("anomalies") or msg.get("recommendations"):
@@ -1284,7 +1284,7 @@ elif menu == "💬 AI Assistant":
                 ans, sql, chart, metadata = resolve_query(prompt)
             st.markdown(ans)
             if chart:
-                render_chart(chart)
+                render_chart(chart, key=f"pending_chart_{len(st.session_state.messages)}")
             
             # Show insights
             if metadata.get("confidence") or metadata.get("anomalies") or metadata.get("recommendations"):
@@ -1331,7 +1331,7 @@ elif menu == "💬 AI Assistant":
                 ans, sql, chart, metadata = resolve_query(prompt)
             st.markdown(ans)
             if chart:
-                render_chart(chart)
+                render_chart(chart, key=f"input_chart_{len(st.session_state.messages)}")
             
             # Show insights
             if metadata.get("confidence") or metadata.get("anomalies") or metadata.get("recommendations"):
