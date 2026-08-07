@@ -185,10 +185,30 @@ section[data-testid="stSidebar"] .stRadio label:hover {{
 }}
 
 /* ── PAGE HEADINGS ───────────────────────────────────────────────────────── */
-h1 {{ color: var(--text-primary) !important; font-weight: 800 !important; letter-spacing: -.5px !important; }}
-h2 {{ color: var(--text-primary) !important; font-weight: 700 !important; }}
-h3 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
-h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
+h1 {{ 
+    color: var(--text-primary) !important; 
+    font-weight: 800 !important; 
+    letter-spacing: -0.035em !important; 
+    line-height: 1.15 !important;
+}}
+h2 {{ 
+    color: var(--text-primary) !important; 
+    font-weight: 700 !important; 
+    letter-spacing: -0.025em !important; 
+    line-height: 1.25 !important;
+}}
+h3 {{ 
+    color: var(--text-primary) !important; 
+    font-weight: 600 !important; 
+    letter-spacing: -0.02em !important; 
+    line-height: 1.3 !important;
+}}
+h4 {{ 
+    color: var(--text-primary) !important; 
+    font-weight: 600 !important; 
+    letter-spacing: -0.015em !important; 
+    line-height: 1.35 !important;
+}}
 
 /* ── METRIC CARDS ────────────────────────────────────────────────────────── */
 [data-testid="metric-container"] {{
