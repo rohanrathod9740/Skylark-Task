@@ -324,6 +324,8 @@ Interpreted as a 4-layer executive reporting suite:
 Skylark-Task/
 ├── streamlit_app.py          # Production Streamlit Cloud Application (UI, Copilot, Dashboard)
 ├── reconstruct_data.py       # Spatial PDF coordinate table parser & SQLite seeder
+├── deals_data.csv            # Extracted Deals tabular dataset (344 records)
+├── work_orders_data.csv      # Extracted Work Orders tabular dataset (176 records)
 ├── requirements.txt          # Python deployment dependencies
 ├── package.json              # Express web application manifest
 ├── .env                      # Environment configuration keys
@@ -333,9 +335,10 @@ Skylark-Task/
 │
 ├── backend/
 │   ├── database.py           # SQLite schema definition, data cleaning, and helper queries
-│   ├── monday_client.py     # Monday.com GraphQL API v2 integration & fallback cache client
-│   ├── server.js             # Express REST API server & static frontend server
+│   ├── monday_client.py      # Monday.com GraphQL API v2 integration & fallback cache client
+│   ├── agent_resolver.py     # Core Python agent query resolution engine (Gemini + SQL)
 │   ├── query_agent.py        # CLI entry point for Express child-process execution
+│   ├── server.js             # Express REST API server & static frontend server
 │   └── skylark.db            # In-process SQLite relational database (344 Deals, 176 WOs)
 │
 └── frontend/                 # Developer HTML5/JS web dashboard interface
