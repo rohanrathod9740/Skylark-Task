@@ -1163,21 +1163,19 @@ elif menu == "💬 AI Assistant":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### ⚡ Interactive Copilot Capabilities")
         
-        # Grid of 6 interactive BI capability cards
+        # Grid of 4 interactive BI capability cards (2x2 layout)
         CAPABILITIES = [
-            ("📈 Revenue Forecast", "Predict next quarter revenue using current pipeline and probabilities.", "How is our pipeline looking?", "FORECASTING"),
-            ("⚠️ Operational Risks", "Identify execution bottlenecks and delayed project work orders.", "Show operational risks and stuck work orders", "RISKS"),
-            ("🏭 Sector Performance", "Compare sales volume and delivery counts across industries.", "Show me the pipeline for Energy sector", "ANALYTICS"),
-            ("💰 Cash Flow Analysis", "Analyze billing, collections, and outstanding receivable balances.", "What is our pending billed value from work orders?", "FINANCE"),
-            ("👥 Team Productivity", "Evaluate owner pipelines and won revenue achievements.", "Who are our top clients?", "MANAGEMENT"),
-            ("📊 Executive Summary", "Generate a consolidated leadership-ready summary report.", "Give me a comprehensive leadership summary update", "REPORTING")
+            ("💰 Revenue Analysis", "Analyze won billing value, collection status, and pending revenues.", "What is our total won revenue and billing status?", "REVENUE"),
+            ("📈 Pipeline Health", "Examine sales deal stages, close probabilities, and forward pipelines.", "How is our sales pipeline looking?", "PIPELINE"),
+            ("🏭 Sectoral Performance", "Compare performance metrics and pipeline values across industry sectors.", "Show energy sector performance and pipeline breakdown", "SECTORS"),
+            ("⚠️ Operational Metrics", "Track execution metrics, delayed work orders, and stuck project items.", "Show operational metrics and stuck work orders", "OPERATIONS")
         ]
         
-        cols = st.columns(3)
+        cols = st.columns(2)
         for i, (title, desc, query, category) in enumerate(CAPABILITIES):
-            with cols[i % 3]:
+            with cols[i % 2]:
                 st.markdown(f"""
-                <div style="background:var(--feat-bg); border:1px solid var(--feat-border); border-radius:16px; padding:18px; min-height:150px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                <div style="background:var(--feat-bg); border:1px solid var(--feat-border); border-radius:16px; padding:18px; min-height:140px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                     <div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                             <span style="font-size:13px; font-weight:700; color:var(--text-primary);">{title}</span>
@@ -1334,18 +1332,16 @@ elif menu == "💬 AI Assistant":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<div style='font-size:13.5px; font-weight:600; color:var(--text-secondary); margin-bottom:8px;'>Answer queries about revenue, pipeline health, sectoral performance, operational metrics</div>", unsafe_allow_html=True)
         st.caption("⚡ Quick Actions (Ask Copilot):")
-        c1, c2, c3 = st.columns(3)
+        c1, c2 = st.columns(2)
         CAPS = [
-            ("📈 Pipeline Forecast", "What is our total won revenue and pipeline forecast?"),
-            ("⚠️ Operational Risks", "Show operational risks and stuck work orders"),
-            ("🏭 Sector Performance", "Show me the pipeline for Energy sector"),
-            ("💰 Cash Flow Analysis", "What is our pending billed value from work orders?"),
-            ("👥 Team Productivity", "Who are our top clients?"),
-            ("📊 Executive Briefing", "Give me a comprehensive leadership summary update")
+            ("💰 Revenue Analysis", "What is our total won revenue and billing status?"),
+            ("📈 Pipeline Health", "How is our sales pipeline looking?"),
+            ("🏭 Sectoral Performance", "Show energy sector performance and pipeline breakdown"),
+            ("⚠️ Operational Metrics", "Show operational metrics and stuck work orders")
         ]
-        cols_grid = [c1, c2, c3]
+        cols_grid = [c1, c2]
         for idx, (label, query) in enumerate(CAPS):
-            if cols_grid[idx % 3].button(label, key=f"quick_act_{idx}", use_container_width=True):
+            if cols_grid[idx % 2].button(label, key=f"quick_act_{idx}", use_container_width=True):
                 st.session_state.pending_query = query
                 st.rerun()
 
