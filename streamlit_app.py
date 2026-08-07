@@ -459,45 +459,62 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
 .stMarkdown p, .stMarkdown li, .stMarkdown span {{ color: var(--text-primary) !important; }}
 .stCaption {{ color: var(--text-muted) !important; }}
 
-/* ── SIDEBAR COLLAPSE BUTTON — default layout with theme visibility ── */
+/* ── COLLAPSE/EXPAND BUTTONS (Header vs Sidebar) ─────────────────────────── */
+/* 1. Collapsed Control Container (in header when collapsed) */
 [data-testid="collapsedControl"] {{
     opacity: 1 !important;
     visibility: visible !important;
 }}
 [data-testid="collapsedControl"] button {{
-    color: #ffffff !important;
-    background: linear-gradient(135deg, #0073ea, #0095f7) !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: var(--text-primary) !important;
+    background: rgba(0, 115, 234, 0.1) !important;
+    border: 1px solid rgba(0, 115, 234, 0.2) !important;
     border-radius: 8px !important;
     opacity: 1 !important;
     visibility: visible !important;
-    box-shadow: 0 4px 12px rgba(0,115,234,.3) !important;
+    box-shadow: 0 4px 12px rgba(0,115,234,0.15) !important;
 }}
 [data-testid="collapsedControl"] button:hover {{
-    background: linear-gradient(135deg, #0052cc, #0073ea) !important;
+    background: rgba(0, 115, 234, 0.2) !important;
 }}
 [data-testid="collapsedControl"] svg {{
-    fill: #ffffff !important;
-    color: #ffffff !important;
+    fill: var(--text-primary) !important;
+    color: var(--text-primary) !important;
     opacity: 1 !important;
 }}
 
-/* ── SIDEBAR EXPAND/COLLAPSE ARROW (open state) ──────────────────────────── */
-button[kind="header"],
-[data-testid="stSidebarCollapseButton"] {{
+/* 2. Main Header Collapse Button (direct in header when collapsed) */
+header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"] {{
+    background: rgba(0, 115, 234, 0.1) !important;
+    border: 1px solid rgba(0, 115, 234, 0.2) !important;
+    border-radius: 8px !important;
     opacity: 1 !important;
     visibility: visible !important;
-    background: rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
 }}
-[data-testid="stSidebarCollapseButton"] svg {{
+header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"] svg {{
+    fill: var(--text-primary) !important;
+    color: var(--text-primary) !important;
+    opacity: 1 !important;
+}}
+header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"]:hover {{
+    background: rgba(0, 115, 234, 0.2) !important;
+}}
+
+/* 3. Sidebar Collapse Button (in sidebar when expanded) */
+section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"] {{
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}}
+section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"] svg {{
     fill: #ffffff !important;
     color: #ffffff !important;
     opacity: 1 !important;
 }}
-[data-testid="stSidebarCollapseButton"]:hover {{
-    background: rgba(255,255,255,0.18) !important;
+section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"]:hover {{
+    background: rgba(255, 255, 255, 0.18) !important;
 }}
 </style>
 """, unsafe_allow_html=True)
