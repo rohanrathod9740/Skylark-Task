@@ -1302,6 +1302,7 @@ elif menu == "📊 Executive Dashboard":
     
     top_sector = qdb("SELECT sector_service, SUM(masked_deal_value) as val FROM deals GROUP BY sector_service ORDER BY val DESC LIMIT 1")
     top_sector_name = top_sector[0]["sector_service"] if top_sector else "N/A"
+    top_sector_val = top_sector[0]["val"] if top_sector else 0
     
     theme = get_chart_theme()
 
