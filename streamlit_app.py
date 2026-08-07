@@ -1123,9 +1123,12 @@ elif menu == "💬 AI Assistant":
         chat_text = "\n\n".join([f"**{msg['role'].upper()}**: {msg['content']}" for msg in st.session_state.messages])
         c_exp.download_button("📥 Export Log (.md)", chat_text, "executive_chat_log.md", "text/markdown", use_container_width=True)
 
-    # ── 2. AI Executive Briefing (Dashboard overview shown when chat is empty/new)
-    if len(st.session_state.messages) <= 1:
+    # ── 2. AI Executive Briefing (Dashboard overview shown when chat is empty, collapsed when active)
+    brief_container = st.container()
+    if len(st.session_state.messages) > 1:
+        brief_container = st.expander("📊 View Executive Briefing & Copilot Capabilities", expanded=False)
         
+    with brief_container:
         b1, b2 = st.columns([5, 3])
         with b1:
             st.markdown("""
