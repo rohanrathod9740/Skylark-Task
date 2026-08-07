@@ -1410,9 +1410,6 @@ elif menu == "💬 AI Assistant":
                         for rec in msg.get("recommendations"):
                             st.write(f"- 💡 {rec}")
                             
-            if "sql" in msg and msg["sql"]:
-                with st.expander("🗄️ SQL Query Used"):
-                    st.code(msg["sql"], language="sql")
 
     # Dynamic suggestions rendering for the last assistant response
     last_msg = st.session_state.messages[-1] if st.session_state.messages else None
@@ -1456,9 +1453,7 @@ elif menu == "💬 AI Assistant":
                         for rec in metadata.get("recommendations"):
                             st.write(f"- 💡 {rec}")
                             
-            if sql:
-                with st.expander("🗄️ SQL Query Used"):
-                    st.code(sql, language="sql")
+
         obj = {
             "role": "assistant", 
             "content": ans, 
@@ -1522,9 +1517,7 @@ elif menu == "💬 AI Assistant":
                         for rec in metadata.get("recommendations"):
                             st.write(f"- 💡 {rec}")
                             
-            if sql:
-                with st.expander("🗄️ SQL Query Used"):
-                    st.code(sql, language="sql")
+
         obj = {
             "role": "assistant", 
             "content": ans, 
