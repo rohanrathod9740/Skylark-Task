@@ -39,7 +39,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     }
 </style>
-""", unsafe_allowed_code=True)
+""", unsafe_allow_html=True)
 
 # Database connection helper
 DB_PATH = os.path.join("backend", "skylark.db")
@@ -55,7 +55,7 @@ if not os.path.exists(DB_PATH):
     st.stop()
 
 # Sidebar Navigation
-st.sidebar.markdown("<h2 class='monday-header'>Skylark Drones</h2><p style='font-size:11px; margin-top:-15px; letter-spacing:1.5px; color:#676879;'>BUSINESS INTELLIGENCE</p>", unsafe_allowed_code=True)
+st.sidebar.markdown("<h2 class='monday-header'>Skylark Drones</h2><p style='font-size:11px; margin-top:-15px; letter-spacing:1.5px; color:#676879;'>BUSINESS INTELLIGENCE</p>", unsafe_allow_html=True)
 menu = st.sidebar.radio("Main Menu", ["Overview", "AI Assistant", "Executive Dashboard", "Interactive Data Explorer", "Leadership Update"])
 
 st.sidebar.markdown("---")
@@ -217,7 +217,7 @@ elif menu == "Leadership Update":
     
     date_str = datetime.now().strftime("%B %d, %Y")
     
-    st.markdown('<div class="status-badge">● EXECUTIVE REPORT READY</div>', unsafe_allowed_code=True)
+    st.markdown('<div class="status-badge">● EXECUTIVE REPORT READY</div>', unsafe_allow_html=True)
     
     # Document Container
     st.markdown(f"""
@@ -230,9 +230,9 @@ elif menu == "Leadership Update":
             Skylark Drones is tracking a <strong>total sales pipeline of ₹{pipeline_cr:.2f} Cr</strong> across <strong>{open_count} active deals</strong>, with a probability-weighted expected revenue of <strong>₹{weighted_cr:.2f} Cr</strong>. Operations have successfully delivered <strong>{comp_count} work orders</strong>, achieving a total billed value of <strong>₹{billed_lakhs:.2f} Lakhs</strong>.
         </p>
     </div>
-    """, unsafe_allowed_code=True)
+    """, unsafe_allow_html=True)
     
-    st.markdown("<br><h3>2. Revenue & Financial Overview</h3>", unsafe_allowed_code=True)
+    st.markdown("<br><h3>2. Revenue & Financial Overview</h3>", unsafe_allow_html=True)
     df_metrics = pd.DataFrame([
         {"Financial Metric": "Total Open Pipeline", "Amount (INR)": f"₹{open_sum:,.2f}", "Key Observations": "Driven primarily by large Mining & Powerline sector proposals"},
         {"Financial Metric": "Probability-Weighted Revenue", "Amount (INR)": f"₹{weighted_sum:,.2f}", "Key Observations": "Adjusted for High (80%), Medium (50%), and Low (20%) closure probability"},
