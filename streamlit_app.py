@@ -1660,7 +1660,7 @@ elif menu == "📊 Executive Dashboard":
     ]
     for idx, (label, query) in enumerate(chips):
         if f_cols[idx].button(label, key=f"chip_dash_{idx}", use_container_width=True):
-            st.session_state.sidebar_nav = "💬 AI Assistant"
+            st.session_state.active_page = "💬 AI Assistant"
             st.session_state.setdefault("messages", [])
             st.session_state["pending_query"] = query
             st.rerun()
