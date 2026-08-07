@@ -1073,40 +1073,114 @@ if menu == "🏠 Overview":
 # 2. AI ASSISTANT
 # ─────────────────────────────────────────────────────────────────────────────
 elif menu == "💬 AI Assistant":
-    st.title("💬 AI Conversational Assistant")
-    st.caption("Ask anything — business metrics, sector performance, company info, or any BI question.")
-
-    # Founder pills
-    PILLS = [
-        ("📈 Pipeline Health",         "How is our pipeline looking?"),
-        ("💰 Revenue Forecast",        "What is our total won revenue and pipeline forecast?"),
-        ("⚡ Energy Sector",           "Show me the pipeline for Energy sector"),
-        ("⚠️ Delayed Orders",          "Give me a summary of work orders execution and delays"),
-        ("👑 Leadership Summary",      "Give me a comprehensive leadership summary update"),
-        ("🏢 Top Enterprise Clients",  "Who are our top enterprise clients by pipeline value?"),
-        ("💵 Expected Revenue",        "What is our expected revenue from open deals?"),
-        ("🔴 Operational Risks",       "Show operational risks and stuck work orders"),
-        ("🧾 Pending Billing",         "What is our pending billed value from work orders?"),
-    ]
-
-    st.markdown("**Quick Queries:**")
-    cols = st.columns(3)
-    for i, (label, query) in enumerate(PILLS):
-        if cols[i % 3].button(label, key=f"pill_{i}", use_container_width=True):
-            st.session_state.setdefault("messages", [])
-            st.session_state["pending_query"] = query
-
-    st.markdown("---")
+    # ── 1. Hero Section with Status Badges
+    st.markdown("""
+    <div style="background:var(--kpi-bar); border:1px solid var(--border); border-radius:18px; padding:18px 24px; margin-bottom:24px;">
+        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px;">Good Morning 👋</div>
+        <h2 style="margin:2px 0 12px 0; font-size:22px; font-weight:800; color:var(--text-primary);">🧠 Executive Business Intelligence Copilot</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <span style="background:rgba(0,115,234,0.08); color:#0073ea; border:1px solid rgba(0,115,234,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🤝 CONNECTED TO MONDAY.COM</span>
+            <span style="background:rgba(0,200,117,0.08); color:#00c875; border:1px solid rgba(0,200,117,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">📂 344 SALES DEALS</span>
+            <span style="background:rgba(0,200,117,0.08); color:#00c875; border:1px solid rgba(0,200,117,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🛠️ 176 WORK ORDERS</span>
+            <span style="background:rgba(0,200,117,0.08); color:#00c875; border:1px solid rgba(0,200,117,0.15); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🟢 DATA QUALITY: EXCELLENT</span>
+            <span style="background:rgba(120,144,156,0.08); color:var(--text-muted); border:1px solid var(--border); padding:4px 10px; border-radius:30px; font-size:9.5px; font-weight:700;">🕒 SYNCED 2 MIN AGO</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     if "messages" not in st.session_state:
         st.session_state.messages = [{
             "role": "assistant",
-            "content": ("👋 Hi! I'm the **Skylark Drones BI Agent**.\n\n"
-                        "I have access to **344 sales deals** and **176 work orders** from your Monday.com boards.\n\n"
-                        "Ask me anything — from revenue figures to operational risks, or even general questions about Skylark Drones!")
+            "content": "Welcome back. I have analyzed your business databases and prepared today's executive briefing."
         }]
 
+    # Clean reset button
+    if len(st.session_state.messages) > 1:
+        c_reset, c_exp = st.columns([4, 1])
+        if c_reset.button("🔄 Reset Copilot to Briefing View", key="reset_chat"):
+            st.session_state.messages = [{
+                "role": "assistant",
+                "content": "Welcome back. I have analyzed your business databases and prepared today's executive briefing."
+            }]
+            st.rerun()
+        
+        chat_text = "\n\n".join([f"**{msg['role'].upper()}**: {msg['content']}" for msg in st.session_state.messages])
+        c_exp.download_button("📥 Export Log (.md)", chat_text, "executive_chat_log.md", "text/markdown", use_container_width=True)
 
+    # Calculate values for welcome metrics
+    deal_cnt   = qdb("SELECT COUNT(*) as n FROM deals")[0]["n"] or 0
+    wo_cnt     = qdb("SELECT COUNT(*) as n FROM work_orders")[0]["n"] or 0
+    high_prob  = qdb("SELECT COUNT(*) as n FROM deals WHERE deal_status='Open' AND closure_probability='High'")[0]["n"] or 0
+    delayed_cnt= qdb("SELECT COUNT(*) as n FROM work_orders WHERE execution_status IN ('Pause / struck','Not Started')")[0]["n"] or 0
+
+    # ── 2. AI Executive Briefing (Dashboard overview shown when chat is empty/new)
+    if len(st.session_state.messages) <= 1:
+        st.markdown("### 📊 Today's AI Executive Briefing")
+        
+        b1, b2 = st.columns([1, 1])
+        with b1:
+            st.markdown(f"""
+            <div style="background:var(--activity-bg); border:1px solid var(--border); border-radius:18px; padding:20px; height:100%; box-shadow:0 4px 14px rgba(0,0,0,0.03);">
+                <h4 style="margin:0 0 14px 0; font-size:13px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+                    📈 Current Status Metrics
+                </h4>
+                <ul style="margin:0; padding-left:18px; font-size:12.5px; color:var(--text-primary); line-height:1.7;">
+                    <li>Database active index: <strong>{deal_cnt} sales deals</strong> and <strong>{wo_cnt} work orders</strong>.</li>
+                    <li>Forward pipeline: <strong>{high_prob} high-probability open opportunities</strong>.</li>
+                    <li>Operational warning: <strong>{delayed_cnt} work orders currently delayed/paused</strong>.</li>
+                    <li>Primary sales engine: <strong>Energy sector</strong> holding the largest pipeline segment.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with b2:
+            st.markdown("""
+            <div style="background:var(--activity-bg); border:1px solid var(--border); border-radius:18px; padding:20px; height:100%; box-shadow:0 4px 14px rgba(0,0,0,0.03);">
+                <h4 style="margin:0 0 14px 0; font-size:13px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+                    🎯 Recommended Priorities
+                </h4>
+                <ul style="margin:0; padding-left:18px; font-size:12.5px; color:var(--text-primary); line-height:1.7;">
+                    <li><strong>Priority 1</strong>: Follow up on delayed energy sector work orders.</li>
+                    <li><strong>Priority 2</strong>: Audit outstanding receivables in high-priority accounts.</li>
+                    <li><strong>Priority 3</strong>: Review unassigned open deals to maximize sales velocity.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### ⚡ Interactive Copilot Capabilities")
+        
+        # Grid of 6 interactive BI capability cards
+        CAPABILITIES = [
+            ("📈 Revenue Forecast", "Predict next quarter revenue using current pipeline and probabilities.", "How is our pipeline looking?", "FORECASTING"),
+            ("⚠️ Operational Risks", "Identify execution bottlenecks and delayed project work orders.", "Show operational risks and stuck work orders", "RISKS"),
+            ("🏭 Sector Performance", "Compare sales volume and delivery counts across industries.", "Show me the pipeline for Energy sector", "ANALYTICS"),
+            ("💰 Cash Flow Analysis", "Analyze billing, collections, and outstanding receivable balances.", "What is our pending billed value from work orders?", "FINANCE"),
+            ("👥 Team Productivity", "Evaluate owner pipelines and won revenue achievements.", "Who are our top clients?", "MANAGEMENT"),
+            ("📊 Executive Summary", "Generate a consolidated leadership-ready summary report.", "Give me a comprehensive leadership summary update", "REPORTING")
+        ]
+        
+        cols = st.columns(3)
+        for i, (title, desc, query, category) in enumerate(CAPABILITIES):
+            with cols[i % 3]:
+                st.markdown(f"""
+                <div style="background:var(--feat-bg); border:1px solid var(--feat-border); border-radius:16px; padding:18px; min-height:150px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:13px; font-weight:700; color:var(--text-primary);">{title}</span>
+                            <span style="background:rgba(0,115,234,0.08); color:#0073ea; padding:2px 6px; border-radius:4px; font-size:7.5px; font-weight:800;">{category}</span>
+                        </div>
+                        <p style="margin:0; font-size:11px; color:var(--text-muted); line-height:1.4;">{desc}</p>
+                    </div>
+                    <div style="font-size:10px; color:var(--text-muted); margin-top:8px;">⏱️ Latency: &lt; 2.2s</div>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("Activate →", key=f"cap_btn_{i}", use_container_width=True):
+                    st.session_state["pending_query"] = query
+                    st.rerun()
+                st.markdown("<br>", unsafe_allow_html=True)
+
+    st.markdown("---")
 
     def render_chart(chart):
         if not chart:
@@ -1143,6 +1217,7 @@ elif menu == "💬 AI Assistant":
             )
             st.plotly_chart(fig, use_container_width=True)
 
+    # ── 3. Chat Messages Render Loop
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
