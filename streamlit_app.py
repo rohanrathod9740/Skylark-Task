@@ -1123,12 +1123,9 @@ elif menu == "💬 AI Assistant":
         chat_text = "\n\n".join([f"**{msg['role'].upper()}**: {msg['content']}" for msg in st.session_state.messages])
         c_exp.download_button("📥 Export Log (.md)", chat_text, "executive_chat_log.md", "text/markdown", use_container_width=True)
 
-    # ── 2. AI Executive Briefing (Dashboard overview shown when chat is empty, collapsed when active)
-    brief_container = st.container()
-    if len(st.session_state.messages) > 1:
-        brief_container = st.expander("📊 View Executive Briefing & Copilot Capabilities", expanded=False)
-        
-    with brief_container:
+    # ── 2. AI Executive Briefing (Dashboard overview shown when chat is empty)
+    if len(st.session_state.messages) <= 1:
+        # Render briefing directly
         b1, b2 = st.columns([5, 3])
         with b1:
             st.markdown("""
@@ -1320,7 +1317,24 @@ elif menu == "💬 AI Assistant":
         if chart:
             obj["chart"] = chart
         st.session_state.messages.append(obj)
-        st.rerun()
+    # If chat is active, render quick actions above the text input
+    if len(st.session_state.messages) > 1:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.caption("⚡ Quick Actions (Ask Copilot):")
+        c1, c2, c3 = st.columns(3)
+        CAPS = [
+            ("📈 Pipeline Forecast", "What is our total won revenue and pipeline forecast?"),
+            ("⚠️ Operational Risks", "Show operational risks and stuck work orders"),
+            ("🏭 Sector Performance", "Show me the pipeline for Energy sector"),
+            ("💰 Cash Flow Analysis", "What is our pending billed value from work orders?"),
+            ("👥 Team Productivity", "Who are our top clients?"),
+            ("📊 Executive Briefing", "Give me a comprehensive leadership summary update")
+        ]
+        cols_grid = [c1, c2, c3]
+        for idx, (label, query) in enumerate(CAPS):
+            if cols_grid[idx % 3].button(label, key=f"quick_act_{idx}", use_container_width=True):
+                st.session_state.pending_query = query
+                st.rerun()
 
     if prompt := st.chat_input("Ask about revenue, pipeline, Skylark Drones, or any BI question…"):
         st.session_state.messages.append({"role": "user", "content": prompt})
