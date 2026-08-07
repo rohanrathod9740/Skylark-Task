@@ -459,35 +459,26 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
 .stMarkdown p, .stMarkdown li, .stMarkdown span {{ color: var(--text-primary) !important; }}
 .stCaption {{ color: var(--text-muted) !important; }}
 
-/* ── SIDEBAR COLLAPSE BUTTON — always visible ────────────────────────────── */
+/* ── SIDEBAR COLLAPSE BUTTON — default layout with theme visibility ── */
 [data-testid="collapsedControl"] {{
-    position: fixed !important;
-    top: 10px !important;
-    left: 10px !important;
-    z-index: 999999 !important;
-    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }}
 [data-testid="collapsedControl"] button {{
+    color: #ffffff !important;
     background: linear-gradient(135deg, #0073ea, #0095f7) !important;
     border: 1px solid rgba(255,255,255,0.15) !important;
     border-radius: 8px !important;
-    width: 38px !important;
-    height: 38px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: 0 4px 12px rgba(0,115,234,.35) !important;
-    transition: all .2s ease !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: 0 4px 12px rgba(0,115,234,.3) !important;
 }}
 [data-testid="collapsedControl"] button:hover {{
     background: linear-gradient(135deg, #0052cc, #0073ea) !important;
-    transform: scale(1.05) !important;
 }}
 [data-testid="collapsedControl"] svg {{
     fill: #ffffff !important;
     color: #ffffff !important;
-    width: 20px !important;
-    height: 20px !important;
     opacity: 1 !important;
 }}
 
