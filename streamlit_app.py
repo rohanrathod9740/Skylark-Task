@@ -754,11 +754,14 @@ PAGES = [
     "🔍 Data Explorer",
     "📄 Leadership Update"
 ]
-if "sidebar_nav" not in st.session_state:
-    st.session_state.sidebar_nav = "🏠 Overview"
 
-menu = st.sidebar.radio("Navigate", PAGES, key="sidebar_nav")
+if "active_page" not in st.session_state:
+    st.session_state.active_page = "🏠 Overview"
+
+menu = st.sidebar.radio("Navigate", PAGES, index=PAGES.index(st.session_state.active_page))
+st.session_state.active_page = menu
 st.sidebar.markdown("---")
+
 
 # ── Theme Toggle ──────────────────────────────────────────────────────────
 toggle_label = "☀️ Switch to Light Mode" if dark else "🌙 Switch to Dark Mode"
@@ -875,7 +878,7 @@ if menu == "🏠 Overview":
             </div>
             """, unsafe_allow_html=True)
             if st.button(f"Open {title} →", key=f"feat_btn_{i}", use_container_width=True):
-                st.session_state.sidebar_nav = target
+                st.session_state.active_page = target
                 st.rerun()
             st.markdown("<br>", unsafe_allow_html=True)
 
