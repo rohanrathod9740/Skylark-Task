@@ -23,96 +23,234 @@ st.set_page_config(
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 html, body, [class*="css"] { font-family: 'Outfit', sans-serif !important; }
 
-/* Sidebar */
+/* ── GLOBAL ───────────────────────────────────────────────────────────────── */
+.main .block-container { padding: 2rem 2.5rem 2rem 2.5rem; max-width: 1400px; }
+body, .stApp { background: #f0f2f8 !important; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────────────── */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #1a1f36 0%, #292f4c 100%);
-    border-right: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(180deg, #0d1117 0%, #161b27 60%, #1a2235 100%) !important;
+    border-right: 1px solid rgba(255,255,255,0.05) !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,.25);
 }
-section[data-testid="stSidebar"] * { color: #d2d3d9 !important; }
-section[data-testid="stSidebar"] .stRadio label { 
-    padding: 8px 12px; border-radius: 8px; transition: background .2s;
+section[data-testid="stSidebar"] * { color: #c9cdd8 !important; }
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 { color: #ffffff !important; }
+
+/* Radio nav buttons */
+section[data-testid="stSidebar"] .stRadio > div { gap: 4px; }
+section[data-testid="stSidebar"] .stRadio label {
+    padding: 10px 16px !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all .2s ease !important;
+    cursor: pointer !important;
+    border: 1px solid transparent !important;
+}
+section[data-testid="stSidebar"] .stRadio label:hover {
+    background: rgba(255,255,255,0.06) !important;
+    border-color: rgba(255,255,255,0.08) !important;
 }
 
-/* Metric cards */
+/* ── METRIC CARDS ────────────────────────────────────────────────────────── */
 [data-testid="metric-container"] {
-    background: #ffffff;
-    border: 1px solid #e6e9ef;
-    border-radius: 14px;
-    padding: 20px 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.04);
+    background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%) !important;
+    border: 1px solid rgba(0,115,234,0.12) !important;
+    border-radius: 18px !important;
+    padding: 22px 26px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06), 0 1px 4px rgba(0,115,234,.08) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: transform .2s ease, box-shadow .2s ease !important;
+}
+[data-testid="metric-container"]:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 32px rgba(0,115,234,.15) !important;
+}
+[data-testid="metric-container"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0073ea, #00c875);
+    border-radius: 18px 18px 0 0;
 }
 [data-testid="metric-container"] [data-testid="stMetricLabel"] {
-    font-size: 12px; font-weight: 600; letter-spacing: .5px;
-    text-transform: uppercase; color: #676879 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: .8px !important;
+    text-transform: uppercase !important;
+    color: #8b95a8 !important;
 }
 [data-testid="metric-container"] [data-testid="stMetricValue"] {
-    font-size: 26px; font-weight: 700; color: #0073ea !important;
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #0d1117 !important;
+    line-height: 1.2 !important;
+}
+[data-testid="metric-container"] [data-testid="stMetricDelta"] {
+    font-size: 12px !important;
+    font-weight: 600 !important;
 }
 
-/* Chat messages */
-[data-testid="stChatMessageContent"] { font-size: 15px; line-height: 1.6; }
+/* ── PAGE TITLES ─────────────────────────────────────────────────────────── */
+h1 { color: #0d1117 !important; font-weight: 800 !important; letter-spacing: -.5px !important; }
+h2 { color: #1a2235 !important; font-weight: 700 !important; }
+h3 { color: #1a2235 !important; font-weight: 600 !important; }
 
-/* Badges */
-.green-badge {
-    background: rgba(0,200,117,.12); color: #00c875;
-    border: 1px solid rgba(0,200,117,.3);
-    padding: 4px 14px; border-radius: 20px;
-    font-size: 11px; font-weight: 700; letter-spacing: .7px;
-    display: inline-block; margin-bottom: 16px;
-}
-.blue-badge {
-    background: rgba(0,115,234,.1); color: #0073ea;
-    border: 1px solid rgba(0,115,234,.25);
-    padding: 4px 14px; border-radius: 20px;
-    font-size: 11px; font-weight: 700;
-    display: inline-block;
-}
-
-/* Hero card */
+/* ── HERO CARD ───────────────────────────────────────────────────────────── */
 .hero-card {
-    background: linear-gradient(135deg, #0073ea 0%, #0095f7 50%, #00c875 100%);
-    border-radius: 20px;
-    padding: 40px 48px;
+    background: linear-gradient(135deg, #0052cc 0%, #0073ea 40%, #00a3bf 75%, #00c875 100%);
+    border-radius: 24px;
+    padding: 48px 56px;
     color: white;
-    margin-bottom: 28px;
-    box-shadow: 0 8px 32px rgba(0,115,234,.25);
+    margin-bottom: 32px;
+    box-shadow: 0 12px 48px rgba(0,115,234,.3), 0 4px 12px rgba(0,0,0,.15);
+    position: relative;
+    overflow: hidden;
 }
-.hero-card h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-.hero-card p { font-size: 16px; opacity: .9; margin: 0; }
+.hero-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+}
+.hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: 120px;
+    width: 140px; height: 140px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+}
+.hero-card h1 {
+    font-size: 36px !important;
+    font-weight: 800 !important;
+    color: white !important;
+    margin-bottom: 12px !important;
+    letter-spacing: -.5px !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,.15) !important;
+}
+.hero-card p {
+    font-size: 16px !important;
+    color: rgba(255,255,255,.88) !important;
+    margin: 0 !important;
+    line-height: 1.6 !important;
+    max-width: 680px;
+}
+.hero-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.25);
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white !important;
+    letter-spacing: .5px;
+    margin-bottom: 20px;
+}
+.hero-live-dot {
+    width: 8px; height: 8px;
+    background: #00ff88;
+    border-radius: 50%;
+    animation: pulse-dot 1.4s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .6; transform: scale(1.4); }
+}
 
-/* Feature card */
+/* ── FEATURE CARDS ───────────────────────────────────────────────────────── */
 .feat-card {
-    background: #fff;
-    border: 1px solid #e6e9ef;
-    border-radius: 14px;
-    padding: 22px 24px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,.07);
+    border-radius: 18px;
+    padding: 26px 26px;
     height: 100%;
-    box-shadow: 0 2px 8px rgba(0,0,0,.03);
-    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    cursor: default;
 }
-.feat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,115,234,.1); }
-.feat-card h4 { font-size: 15px; font-weight: 700; color: #323338; margin-bottom: 8px; }
-.feat-card p  { font-size: 13px; color: #676879; margin: 0; line-height: 1.5; }
-.feat-icon { font-size: 28px; margin-bottom: 12px; }
-
-/* Stat strip */
-.stat-strip {
-    background: #fff;
-    border: 1px solid #e6e9ef;
+.feat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 36px rgba(0,115,234,.14);
+    border-color: rgba(0,115,234,.25);
+}
+.feat-icon-wrap {
+    width: 52px; height: 52px;
     border-radius: 14px;
-    padding: 20px 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+.feat-card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0d1117;
+    margin-bottom: 8px;
+    margin-top: 0;
+}
+.feat-card p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ── SECTION DIVIDER ─────────────────────────────────────────────────────── */
+.section-header {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0d1117;
+    margin: 28px 0 18px 0;
     display: flex;
     align-items: center;
-    gap: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.03);
+    gap: 10px;
+}
+.section-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,115,234,.2), transparent);
+    margin-left: 12px;
 }
 
-/* Report table */
-.report-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+/* ── STATUS BADGES ───────────────────────────────────────────────────────── */
+.green-badge {
+    background: rgba(0,200,117,.1);
+    color: #00a859;
+    border: 1px solid rgba(0,200,117,.3);
+    padding: 5px 16px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 18px;
+}
+.live-dot {
+    width: 7px; height: 7px;
+    background: #00c875;
+    border-radius: 50%;
+    animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+/* ── REPORT TABLE ────────────────────────────────────────────────────────── */
+.report-table { width: 100%; border-collapse: collapse; margin-top: 8px; border-radius: 14px; overflow: hidden; }
 .report-table th {
     background: #f5f6f8; font-weight: 700; font-size: 12px;
     text-transform: uppercase; letter-spacing: .5px;
@@ -402,78 +540,155 @@ st.sidebar.caption(f"📁 {deals_n} Deals · {wos_n} Work Orders")
 # ─────────────────────────────────────────────────────────────────────────────
 if menu == "🏠 Overview":
 
-    # ── Hero card ────────────────────────────────────────────────────────────
-    st.markdown("""
-    <div class="hero-card">
-        <h1>🚁 Skylark Drones — BI Agent</h1>
-        <p>Real-time business intelligence powered by AI. Instantly query revenue, pipeline health,
-        operational metrics, and leadership reports — all from your Monday.com workspace data.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ── KPI strip ────────────────────────────────────────────────────────────
+    # Pull live KPIs
     won_rev   = qdb("SELECT SUM(masked_deal_value) as v FROM deals WHERE deal_status='Won'")[0]["v"] or 0
     open_pipe = qdb("SELECT SUM(masked_deal_value) as v FROM deals WHERE deal_status='Open'")[0]["v"] or 0
     billed    = qdb("SELECT SUM(billed_excl_gst) as v FROM work_orders")[0]["v"] or 0
     ar        = qdb("SELECT SUM(amount_receivable) as v FROM work_orders")[0]["v"] or 0
     open_cnt  = qdb("SELECT COUNT(*) as n FROM deals WHERE deal_status='Open'")[0]["n"]
+    comp_cnt  = qdb("SELECT COUNT(*) as n FROM work_orders WHERE execution_status='Completed'")[0]["n"]
 
-    k1, k2, k3, k4, k5 = st.columns(5)
-    k1.metric("🏆 Won Revenue",      f"₹{won_rev/1e7:.2f} Cr")
-    k2.metric("🔄 Open Pipeline",    f"₹{open_pipe/1e7:.2f} Cr", f"{open_cnt} active deals")
-    k3.metric("🧾 Total Billed",     f"₹{billed/1e5:.2f} L")
-    k4.metric("📥 Outstanding AR",   f"₹{ar/1e5:.2f} L")
-    k5.metric("📊 Database Records", f"{deals_n + wos_n}", f"{deals_n} deals · {wos_n} WOs")
+    # ── Hero Card ─────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="hero-card">
+        <div class="hero-live-badge">
+            <div class="hero-live-dot"></div>
+            LIVE — MONDAY.COM DATA CONNECTED
+        </div>
+        <h1>🚁 Skylark Drones BI Agent</h1>
+        <p>AI-powered business intelligence for founders & executives.<br>
+        Instantly query revenue, pipeline, operational metrics, and generate leadership reports
+        — all from your Monday.com boards, in plain English.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    # ── Dark KPI Bar ───────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="kpi-bar">
+        <div class="kpi-item">
+            <div class="kpi-val">₹{won_rev/1e7:.2f} Cr</div>
+            <div class="kpi-lbl">🏆 Won Revenue</div>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-item">
+            <div class="kpi-val">₹{open_pipe/1e7:.2f} Cr</div>
+            <div class="kpi-lbl">🔄 Open Pipeline</div>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-item">
+            <div class="kpi-val">{open_cnt}</div>
+            <div class="kpi-lbl">📋 Active Deals</div>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-item">
+            <div class="kpi-val">₹{billed/1e5:.2f} L</div>
+            <div class="kpi-lbl">🧾 Total Billed</div>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-item">
+            <div class="kpi-val">₹{ar/1e5:.2f} L</div>
+            <div class="kpi-lbl">📥 Outstanding AR</div>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-item">
+            <div class="kpi-val">{comp_cnt}</div>
+            <div class="kpi-lbl">✅ Completed WOs</div>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-item">
+            <div class="kpi-val">{deals_n + wos_n}</div>
+            <div class="kpi-lbl">📊 DB Records</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # ── Feature grid ─────────────────────────────────────────────────────────
-    st.markdown("### What this agent can do for you")
+    # ── Feature Grid ───────────────────────────────────────────────────────────
+    st.markdown('<div class="section-header">⚡ What This Agent Can Do</div>', unsafe_allow_html=True)
+
     features = [
-        ("💬", "Natural Language Queries", "Ask any business question in plain English — pipeline health, sector performance, client rankings, billing status."),
-        ("📊", "Executive Dashboard", "Visual KPI charts: pipeline breakdown, sectoral performance, top owners, work order execution."),
-        ("📄", "Leadership Reports", "Auto-generated executive summaries with probability-weighted forecasts. Copy or download as Markdown."),
-        ("🔍", "Data Explorer", "Browse, search, and filter all 344 deals and 176 work orders with live CSV export."),
-        ("🤖", "Gemini AI Powered", "Backed by Gemini 2.0 Flash for contextual, insightful answers — not just raw numbers."),
-        ("⚡", "Monday.com Integration", "Reads from Monday.com boards via API. Falls back to local SQLite cache for offline resilience."),
+        ("💬", "rgba(0,115,234,0.1)", "Natural Language Queries",
+         "Ask any business question in plain English. Pipeline health, sector breakdowns, client rankings — answered instantly."),
+        ("📊", "rgba(0,200,117,0.1)", "Executive Dashboard",
+         "Live visual KPI charts: pipeline breakdown by status, sectoral performance, top owners, and work order execution rates."),
+        ("📄", "rgba(255,171,61,0.1)", "Leadership Report Generator",
+         "Auto-generated executive summaries with probability-weighted revenue forecasts. Download as Markdown in one click."),
+        ("🔍", "rgba(98,79,226,0.1)", "Interactive Data Explorer",
+         "Browse, search, and filter all 344 deals and 176 work orders with real-time keyword search and CSV export."),
+        ("🤖", "rgba(0,163,191,0.1)", "Gemini 2.0 AI Engine",
+         "Powered by Google Gemini 2.0 Flash for contextual answers. Falls back to guaranteed SQL resolver for exact figures."),
+        ("⚡", "rgba(223,47,74,0.1)", "Monday.com Integration",
+         "Connects to Monday.com boards via API. Automatically falls back to local SQLite cache when offline."),
     ]
-    cols = st.columns(3)
-    for i, (icon, title, desc) in enumerate(features):
-        with cols[i % 3]:
+
+    c1, c2, c3 = st.columns(3)
+    feature_cols = [c1, c2, c3]
+    for i, (icon, bg, title, desc) in enumerate(features):
+        with feature_cols[i % 3]:
             st.markdown(f"""
             <div class="feat-card">
-                <div class="feat-icon">{icon}</div>
+                <div class="feat-icon-wrap" style="background:{bg}">{icon}</div>
                 <h4>{title}</h4>
                 <p>{desc}</p>
             </div>
+            <br>
             """, unsafe_allow_html=True)
-        if i % 3 == 2:
-            st.markdown("<br>", unsafe_allow_html=True)
-            cols = st.columns(3)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    # ── Bottom Row: Activity Log + Quick Start ─────────────────────────────────
+    st.markdown('<div class="section-header">🕐 System Status</div>', unsafe_allow_html=True)
+    al, ar_col = st.columns([3, 2])
 
-    # ── Status timeline ───────────────────────────────────────────────────────
-    col_l, col_r = st.columns([2, 1])
-    with col_l:
-        st.markdown("### 🕐 System Activity")
+    with al:
         st.markdown("""
-        | Status | Component | Detail |
-        |--------|-----------|--------|
-        | 🟢 Online | API Integration | Web server running on Streamlit Cloud |
-        | 🟢 Online | SQLite Database | 344 Deals + 176 Work Orders loaded |
-        | 🟢 Ready  | AI Query Engine | Gemini 2.0 + local fallback resolver |
-        | 🟢 Ready  | Monday.com API  | Mock GraphQL endpoint active |
-        """)
-    with col_r:
-        st.markdown("### 🚀 Quick Start")
-        st.info("👈 Use the **sidebar** to navigate between sections.")
-        st.markdown("""
-        **Try these:**
-        - *"How is our pipeline looking?"*
-        - *"What is our pending billing?"*
-        - *"Tell me about Skylark Drones"*
-        """)
+        <div class="activity-card">
+            <div class="activity-row">
+                <div class="activity-dot-green"></div>
+                <div>
+                    <div class="activity-text">Streamlit Cloud — Online</div>
+                    <div class="activity-sub">Application deployed and publicly accessible</div>
+                </div>
+            </div>
+            <div class="activity-row">
+                <div class="activity-dot-green"></div>
+                <div>
+                    <div class="activity-text">SQLite Database — Connected</div>
+                    <div class="activity-sub">344 Deals · 176 Work Orders loaded and indexed</div>
+                </div>
+            </div>
+            <div class="activity-row">
+                <div class="activity-dot-blue"></div>
+                <div>
+                    <div class="activity-text">Gemini 2.0 Flash — Active</div>
+                    <div class="activity-sub">AI query engine with local SQL fallback resolver</div>
+                </div>
+            </div>
+            <div class="activity-row">
+                <div class="activity-dot-blue"></div>
+                <div>
+                    <div class="activity-text">Monday.com API — Mock Active</div>
+                    <div class="activity-sub">GraphQL endpoint serving local cache data</div>
+                </div>
+            </div>
+            <div class="activity-row">
+                <div class="activity-dot-green"></div>
+                <div>
+                    <div class="activity-text">Data Reconstruction — Complete</div>
+                    <div class="activity-sub">Messy PDFs normalized, split tables merged, nulls handled</div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with ar_col:
+        st.markdown("### 🚀 Try These Queries")
+        st.success("👈 Use the **sidebar** to navigate.")
+        for q_ex in [
+            '"How is our pipeline looking?"',
+            '"What is our pending billing?"',
+            '"Show energy sector performance"',
+            '"Tell me about Skylark Drones"',
+            '"Who are our top clients?"',
+        ]:
+            st.markdown(f"- *{q_ex}*")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 2. AI ASSISTANT
