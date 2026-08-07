@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered Conversational Business Intelligence Agent for Monday.com board analytics, Deals tracking, and Work Order management.">
+    <title>Skylark BI Agent - Executive Leadership Dashboard</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for beautiful interactive visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    <div class="app-container">
+        <!-- Navigation Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fa-solid fa-brain-circuit glow-icon"></i>
+                <div class="logo-text">
+                    <h2>Skylark</h2>
+                    <span>BI AGENT</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <button id="nav-overview-btn" class="nav-item active" aria-label="Open System Overview">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Overview</span>
+                </button>
+                <button id="nav-chat-btn" class="nav-item" aria-label="Open Conversational AI Chat">
+                    <i class="fa-solid fa-comment-dots"></i>
+                    <span>AI Assistant</span>
+                </button>
+                <button id="nav-dashboard-btn" class="nav-item" aria-label="Open Leadership Dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Executive Board</span>
+                </button>
+                <button id="nav-explorer-btn" class="nav-item" aria-label="Open Interactive Data Explorer">
+                    <i class="fa-solid fa-table"></i>
+                    <span>Data Explorer</span>
+                </button>
+                <button id="nav-reports-btn" class="nav-item" aria-label="Open Export Reports panel">
+                    <i class="fa-solid fa-file-export"></i>
+                    <span>Export Reports</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span>Local Database Loaded</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Application Workspace -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1 id="main-heading">Monday.com BI Insights</h1>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <div class="env-toggle">
+                        <i class="fa-solid fa-server"></i>
+                        <span id="env-mode-label">Mode: Mock API</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 1. Executive Overview View -->
+            <section id="overview-section" class="workspace-section active">
+                <div class="overview-container">
+                    <div class="overview-welcome-card">
+                        <div class="welcome-text">
+                            <h2>Welcome, Executive Team</h2>
+                            <p>Real-time analytics and natural language business intelligence for your Monday.com workspace operations, sales pipelines, and work orders tracking.</p>
+                        </div>
+                        <div class="welcome-illustration">
+                            <i class="fa-solid fa-chart-pie animate-pulse" style="font-size: 80px; opacity: 0.15; color: var(--accent-blue);"></i>
+                        </div>
+                    </div>
+
+                    <div class="overview-status-grid">
+                        <div class="status-card-small">
+                            <div class="card-icon"><i class="fa-solid fa-network-wired" style="color: var(--accent-blue);"></i></div>
+                            <div class="card-info">
+                                <h4>Monday.com API</h4>
+                                <span class="badge badge-won" style="font-size: 10px; padding: 2px 8px;">Mock Active</span>
+                            </div>
+                        </div>
+                        <div class="status-card-small">
+                            <div class="card-icon"><i class="fa-solid fa-database" style="color: var(--accent-blue);"></i></div>
+                            <div class="card-info">
+                                <h4>Local SQLite Cache</h4>
+                                <span>344 Deals | 176 Work Orders</span>
+                            </div>
+                        </div>
+                        <div class="status-card-small">
+                            <div class="card-icon"><i class="fa-solid fa-bolt" style="color: var(--accent-blue);"></i></div>
+                            <div class="card-info">
+                                <h4>AI Model Resolver</h4>
+                                <span>Gemini-2.5-Flash (with fallback)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overview-main-grid">
+                        <!-- Quick Links -->
+                        <div class="overview-links-card">
+                            <h3><i class="fa-solid fa-bolt-lightning" style="color: var(--accent-blue); margin-right: 8px;"></i> Quick Actions</h3>
+                            <div class="quick-links-list">
+                                <button class="quick-action-link" onclick="document.getElementById('nav-chat-btn').click();">
+                                    <i class="fa-solid fa-comment-dots" style="color: var(--accent-blue); font-size: 18px;"></i>
+                                    <div class="link-info">
+                                        <strong>Ask AI Assistant</strong>
+                                        <span>Chat with data to extract reports</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right arrow"></i>
+                                </button>
+                                <button class="quick-action-link" onclick="document.getElementById('nav-dashboard-btn').click();">
+                                    <i class="fa-solid fa-chart-line" style="color: var(--accent-blue); font-size: 18px;"></i>
+                                    <div class="link-info">
+                                        <strong>View Executive Dashboard</strong>
+                                        <span>Check visual graphs and KPI metrics</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right arrow"></i>
+                                </button>
+                                <button class="quick-action-link" onclick="document.getElementById('nav-explorer-btn').click();">
+                                    <i class="fa-solid fa-table" style="color: var(--accent-blue); font-size: 18px;"></i>
+                                    <div class="link-info">
+                                        <strong>Open Data Explorer</strong>
+                                        <span>Sort, search, and filter raw tables</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right arrow"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- System Activity Timeline -->
+                        <div class="overview-timeline-card">
+                            <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-blue); margin-right: 8px;"></i> System Activity Log</h3>
+                            <div class="activity-timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-marker" style="background: #2ed573;"></div>
+                                    <div class="timeline-content">
+                                        <strong>API Integration Online</strong>
+                                        <span>Web server running at http://localhost:3000</span>
+                                        <small class="time">Just now</small>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <strong>Interactive Data Explorer Loaded</strong>
+                                        <span>Rendered deals and work orders data grids</span>
+                                        <small class="time">2 minutes ago</small>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <strong>SQLite Database Connected</strong>
+                                        <span>Connected to backend/skylark.db</span>
+                                        <small class="time">1 hour ago</small>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <strong>Data Reconstructed Successfully</strong>
+                                        <span>Normalized raw Deals and Work Orders from PDFs</span>
+                                        <small class="time">2 hours ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Conversational Chat View -->
+            <section id="chat-section" class="workspace-section">
+                <!-- Permanent Suggested Founder Questions Panel -->
+                <div class="founder-questions-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: #fdab3d; margin-right: 6px;"></i> PERMANENT SUGGESTED FOUNDER QUESTIONS</span>
+                        <span class="panel-subtitle">ALWAYS AVAILABLE</span>
+                    </div>
+                    <div class="panel-pills">
+                        <button class="founder-pill suggest-btn" data-query="How is our pipeline looking?">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Pipeline Health</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="What is our total won revenue and pipeline forecast?">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Revenue Forecast</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="Show me the pipeline for Energy sector">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Energy Sector Performance</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="Give me a summary of work orders execution and delays">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Delayed Work Orders</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="Give me a comprehensive leadership summary update">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Leadership Summary</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="Who are our top enterprise clients by pipeline value?">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Top Enterprise Clients</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="What is our expected revenue from open deals?">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Expected Revenue</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="Show operational risks and stuck work orders">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Operational Risks</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                        <button class="founder-pill suggest-btn" data-query="What is our pending billed value from work orders?">
+                            <span class="pill-brackets">[</span>
+                            <span class="pill-text">Pending Billing</span>
+                            <span class="pill-brackets">]</span>
+                            <i class="fa-solid fa-chevron-right pill-arrow"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="message-feed" id="chat-feed">
+                        <div class="message bot-message">
+                            <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                            <div class="message-bubble">
+                                <p>Greetings! I am the Skylark BI Agent. I have loaded <strong>344 deals</strong> and <strong>176 work orders</strong>. How can I assist you with your business intelligence queries today?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sql-preview-panel hidden" id="sql-panel">
+                        <div class="sql-panel-header">
+                            <span><i class="fa-solid fa-database"></i> Executed SQL Query</span>
+                            <button id="close-sql-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <pre><code id="sql-code"></code></pre>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <form id="chat-form">
+                            <input type="text" id="chat-input" placeholder="Ask a business query (e.g. What is the total value of won deals?)..." autocomplete="off" required>
+                            <button type="submit" id="chat-submit-btn" aria-label="Send query">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Executive Dashboard View -->
+            <section id="dashboard-section" class="workspace-section">
+                <!-- Stats Summary Row -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Total Revenue (Won)</span>
+                            <h3 id="stat-won-revenue">₹0.00</h3>
+                        </div>
+                        <div class="stat-icon won"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Active Pipeline (Open)</span>
+                            <h3 id="stat-active-pipeline">₹0.00</h3>
+                        </div>
+                        <div class="stat-icon pipeline"><i class="fa-solid fa-chart-pie"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Total Deals Count</span>
+                            <h3 id="stat-total-deals">0</h3>
+                        </div>
+                        <div class="stat-icon count"><i class="fa-solid fa-briefcase"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Work Orders Active</span>
+                            <h3 id="stat-active-wos">0</h3>
+                        </div>
+                        <div class="stat-icon wos"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    </div>
+                </div>
+
+                <!-- Charts Layout Grid -->
+                <div class="charts-grid">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3><i class="fa-solid fa-chart-bar"></i> Sectoral Performance (Pipeline Value)</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Deals Pipeline Health</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="pipelineChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fa-solid fa-crown"></i> Top Owners Sales Ranking</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="ownerChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3><i class="fa-solid fa-list-check"></i> Work Orders Execution Status</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="woChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Interactive Data Explorer View -->
+            <section id="explorer-section" class="workspace-section">
+                <div class="explorer-container">
+                    <div class="explorer-tabs">
+                        <button class="explorer-tab-btn active" id="tab-deals-btn" data-tab="deals">Deals Explorer</button>
+                        <button class="explorer-tab-btn" id="tab-wos-btn" data-tab="wos">Work Orders Explorer</button>
+                    </div>
+                    
+                    <div class="explorer-controls-card">
+                        <div class="explorer-search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="explorer-search" placeholder="Search by name, owner, client...">
+                        </div>
+                        <div class="explorer-filters">
+                            <div class="filter-group">
+                                <label for="filter-status">Status</label>
+                                <select id="filter-status">
+                                    <option value="all">All Statuses</option>
+                                </select>
+                            </div>
+                            <div class="filter-group" id="filter-sector-group">
+                                <label for="filter-sector">Sector</label>
+                                <select id="filter-sector">
+                                    <option value="all">All Sectors</option>
+                                </select>
+                            </div>
+                            <button id="explorer-reset-btn" class="reset-btn" title="Reset all filters">
+                                <i class="fa-solid fa-rotate-left"></i> Reset
+                            </button>
+                        </div>
+                        <div class="explorer-export-actions">
+                            <button id="explorer-export-csv" class="action-btn" title="Export current view as CSV">
+                                <i class="fa-solid fa-file-csv"></i> Export View
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive-container">
+                        <table class="explorer-table" id="explorer-table">
+                            <thead>
+                                <tr id="explorer-table-header">
+                                    <!-- Dynamic Headers -->
+                                </tr>
+                            </thead>
+                            <tbody id="explorer-table-body">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                        <div id="explorer-empty-state" class="empty-state hidden">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <p>No matching records found. Try adjusting your search query or filters.</p>
+                        </div>
+                    </div>
+
+                    <div class="explorer-pagination">
+                        <div class="pagination-info" id="pagination-info">
+                            Showing 0 to 0 of 0 entries
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="prev-page-btn" class="page-btn" disabled><i class="fa-solid fa-angle-left"></i> Prev</button>
+                            <span id="current-page-num" class="page-num">1</span>
+                            <button id="next-page-btn" class="page-btn" disabled>Next <i class="fa-solid fa-angle-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Export Reports Panel -->
+            <section id="reports-section" class="workspace-section">
+                <div class="reports-split-container">
+                    <!-- Left Sub-navigation Pane -->
+                    <aside class="reports-sidebar">
+                        <div class="sidebar-header">
+                            <h4>Monday Boards & Quality</h4>
+                        </div>
+                        <nav class="reports-sub-nav">
+                            <button class="reports-sub-nav-item active" id="sub-nav-report-btn" data-pane="leadership-report-pane">
+                                <i class="fa-regular fa-file-lines"></i>
+                                <span>Leadership Update</span>
+                            </button>
+                            <button class="reports-sub-nav-item" id="sub-nav-raw-btn" data-pane="raw-csv-pane">
+                                <i class="fa-solid fa-file-csv"></i>
+                                <span>Raw Data Export</span>
+                            </button>
+                        </nav>
+                    </aside>
+
+                    <!-- Right Main Workspace -->
+                    <main class="reports-workspace">
+                        <!-- Pane 1: Executive Leadership Report -->
+                        <div class="reports-pane active" id="leadership-report-pane">
+                            <div class="pane-header-actions">
+                                <span class="report-status-badge"><span class="dot animate-pulse"></span> EXECUTIVE REPORT READY</span>
+                                <div class="action-buttons">
+                                    <button class="report-action-btn" id="copy-report-btn" title="Copy Report text to clipboard">
+                                        <i class="fa-regular fa-copy"></i> Copy Report
+                                    </button>
+                                    <button class="report-action-btn" id="download-report-btn" title="Download Report as Markdown file">
+                                        <i class="fa-solid fa-download"></i> Download .md
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="leadership-document-card" id="leadership-report-card">
+                                <div class="report-doc-title">
+                                    <i class="fa-solid fa-file-contract" style="color: var(--accent-blue); font-size: 26px;"></i>
+                                    <h2>Skylark Drones - Executive Leadership Update</h2>
+                                </div>
+                                <div class="report-meta">
+                                    <p><strong>Date:</strong> <span id="report-date-str">August 7, 2026</span></p>
+                                    <p><strong>Data Source:</strong> Dynamic Monday.com Integrations <em>(Deals Board & Work Orders Board)</em></p>
+                                </div>
+
+                                <hr class="report-divider">
+
+                                <div class="report-section">
+                                    <h3>1. Executive Summary</h3>
+                                    <p id="report-exec-summary">
+                                        Skylark Drones is tracking a <strong>total sales pipeline of ₹0.00 Cr</strong> across <strong>0 active deals</strong>, with a probability-weighted expected revenue of <strong>₹0.00 Cr</strong>. Operations have successfully delivered <strong>0 work orders</strong>, achieving a total billed value of <strong>₹0.00 Lakhs</strong>.
+                                    </p>
+                                </div>
+
+                                <div class="report-section">
+                                    <h3>2. Revenue & Financial Overview</h3>
+                                    <div class="table-responsive-container">
+                                        <table class="report-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Financial Metric</th>
+                                                    <th>Amount (INR)</th>
+                                                    <th>Key Observations</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Total Open Pipeline</strong></td>
+                                                    <td id="td-open-pipeline" style="font-weight: 600;">₹0.00</td>
+                                                    <td>Driven primarily by large Mining & Powerline sector proposals</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Probability-Weighted Revenue</strong></td>
+                                                    <td id="td-weighted-rev" style="font-weight: 600;">₹0.00</td>
+                                                    <td>Adjusted for High (80%), Medium (50%), and Low (20%) closure probability</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Realized Won Revenue</strong></td>
+                                                    <td id="td-realized-won" style="font-weight: 600;">₹0.00</td>
+                                                    <td>Closed-won contract commitments</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Billed Work Order Value</strong></td>
+                                                    <td id="td-billed-wo" style="font-weight: 600;">₹0.00</td>
+                                                    <td>Invoiced operational deliveries</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Outstanding Receivables</strong></td>
+                                                    <td id="td-outstanding-ar" style="font-weight: 600;">₹0.00</td>
+                                                    <td>Requires collection prioritization for priority accounts</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pane 2: Raw CSV Export Cards -->
+                        <div class="reports-pane" id="raw-csv-pane">
+                            <div class="reports-header-card">
+                                <h2><i class="fa-solid fa-file-csv"></i> Download Raw CSV Sheets</h2>
+                                <p>Export normalized sales pipeline and project execution datasets for offline reviews and leadership sync updates.</p>
+                            </div>
+                            <div class="reports-grid">
+                                <div class="report-export-card">
+                                    <div class="card-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                                    <h3>Sales Pipeline Data</h3>
+                                    <p>Includes all deals ( Naruto, Sasuke, Sakura, etc.), owner codes, client codes, status, values, tentative closing, stages, products, and sectors.</p>
+                                    <a href="/api/export?type=deals" download class="export-btn" id="export-deals-btn">
+                                        <i class="fa-solid fa-download"></i> Download Deals CSV
+                                    </a>
+                                </div>
+                                <div class="report-export-card">
+                                    <div class="card-icon"><i class="fa-solid fa-gears"></i></div>
+                                    <h3>Work Orders Tracker</h3>
+                                    <p>Includes project tracking data: natures of work, execution statuses, document types, invoice logs, amounts exclusions/inclusions of GST, and receivables.</p>
+                                    <a href="/api/export?type=work_orders" download class="export-btn" id="export-wos-btn">
+                                        <i class="fa-solid fa-download"></i> Download Work Orders CSV
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

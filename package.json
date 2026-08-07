@@ -1,0 +1,15 @@
+{
+  "name": "skylark-bi-agent",
+  "version": "1.0.0",
+  "description": "Conversational Business Intelligence Agent with Monday.com Mock GraphQL Integration",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "reconstruct": "python reconstruct_data.py && python backend/database.py"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "sqlite3": "^5.1.7"
+  }
+}
