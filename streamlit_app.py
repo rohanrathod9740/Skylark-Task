@@ -44,12 +44,12 @@ if dark:
     --metric-bg:     linear-gradient(145deg,#1e2d45,#1a2538);
     --metric-val:    #60a5fa;
     --metric-lbl:    #94a3b8;
-    --feat-bg:       #1e2d45;
+    --feat-bg:       #161b27;
     --feat-border:   rgba(255,255,255,0.06);
     --feat-text:     #e2e8f0;
     --feat-subtext:  #94a3b8;
     --section-text:  #f0f2f8;
-    --activity-bg:   #1e2d45;
+    --activity-bg:   #161b27;
     --activity-text: #e2e8f0;
     --activity-sub:  #94a3b8;
     --activity-sep:  rgba(255,255,255,0.06);
@@ -68,22 +68,23 @@ if dark:
     --input-text:    #f0f2f8;
     --tab-bg:        #1e2d45;
     --tab-text:      #94a3b8;
+    --grid-line:     rgba(255,255,255,0.015);
     """
 else:
     theme_vars = """
-    --bg-main:       #f0f2f8;
+    --bg-main:       #f8f9fc;
     --bg-card:       #ffffff;
-    --bg-card2:      #f8faff;
+    --bg-card2:      #fcfdfe;
     --bg-sidebar:    linear-gradient(180deg, #0d1117 0%, #161b27 60%, #1a2235 100%);
-    --border:        rgba(0,0,0,0.07);
+    --border:        rgba(0,0,0,0.06);
     --text-primary:  #0d1117;
     --text-secondary:#374151;
     --text-muted:    #6b7280;
-    --metric-bg:     linear-gradient(145deg,#ffffff,#f8faff);
+    --metric-bg:     linear-gradient(145deg,#ffffff,#fdfdff);
     --metric-val:    #0d1117;
     --metric-lbl:    #8b95a8;
     --feat-bg:       #ffffff;
-    --feat-border:   rgba(0,0,0,0.07);
+    --feat-border:   rgba(0,0,0,0.06);
     --feat-text:     #0d1117;
     --feat-subtext:  #6b7280;
     --section-text:  #0d1117;
@@ -106,6 +107,7 @@ else:
     --input-text:    #0d1117;
     --tab-bg:        #ffffff;
     --tab-text:      #676879;
+    --grid-line:     rgba(0,0,0,0.007);
     """
 
 st.markdown(f"""
@@ -132,7 +134,15 @@ html, body, [class*="css"] {{
 }}
 
 /* ── GLOBAL ───────────────────────────────────────────────────────────────── */
-.stApp {{ background: var(--bg-main) !important; }}
+.stApp {{
+    background: var(--bg-main) !important;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.045) 0%, transparent 60%),
+        radial-gradient(circle at 80% 10%, rgba(168, 85, 247, 0.035) 0%, transparent 50%),
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) !important;
+    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px !important;
+}}
 .main .block-container {{ padding: 2rem 2.5rem; max-width: 1400px; }}
 
 /* Fix all paragraph and label text */
