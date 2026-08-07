@@ -878,7 +878,7 @@ def resolve_query_fallback(query: str):
                "📊 **Revenue & Pipeline** | ⚡ **Energy Sector** | ⚠️ **Delayed Work Orders**\n"
                "🏢 **Top Clients** | 💰 **Expected Revenue** | 👑 **Leadership Summary**\n"
                "🌐 **Sectoral Performance** | 🛠️ **Work Orders** | 📋 **Operational Risks**\n\n"
-               "Or ask me anything about **Skylark Drones** as a company!")
+               "Or ask me any general question about sales deals, pipeline health, or work order operations!")
 
     return ans, sql, chart
 
