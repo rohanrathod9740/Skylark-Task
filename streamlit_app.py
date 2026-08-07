@@ -466,38 +466,43 @@ h4 {{ color: var(--text-primary) !important; font-weight: 600 !important; }}
     visibility: visible !important;
 }}
 [data-testid="collapsedControl"] button {{
-    color: var(--text-primary) !important;
-    background: rgba(0, 115, 234, 0.1) !important;
-    border: 1px solid rgba(0, 115, 234, 0.2) !important;
+    color: #ffffff !important;
+    background: #0073ea !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 8px !important;
     opacity: 1 !important;
     visibility: visible !important;
-    box-shadow: 0 4px 12px rgba(0,115,234,0.15) !important;
+    box-shadow: 0 4px 12px rgba(0,115,234,0.4) !important;
 }}
 [data-testid="collapsedControl"] button:hover {{
-    background: rgba(0, 115, 234, 0.2) !important;
+    background: #0052cc !important;
 }}
 [data-testid="collapsedControl"] svg {{
-    fill: var(--text-primary) !important;
-    color: var(--text-primary) !important;
+    fill: #ffffff !important;
+    color: #ffffff !important;
     opacity: 1 !important;
 }}
 
 /* 2. Main Header Collapse Button (direct in header when collapsed) */
 header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"] {{
-    background: rgba(0, 115, 234, 0.1) !important;
-    border: 1px solid rgba(0, 115, 234, 0.2) !important;
+    background: #0073ea !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 8px !important;
     opacity: 1 !important;
     visibility: visible !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(0,115,234,0.4) !important;
 }}
 header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"] svg {{
-    fill: var(--text-primary) !important;
-    color: var(--text-primary) !important;
+    fill: #ffffff !important;
+    color: #ffffff !important;
     opacity: 1 !important;
 }}
 header[data-testid="stHeader"] button[data-testid="stSidebarCollapseButton"]:hover {{
-    background: rgba(0, 115, 234, 0.2) !important;
+    background: #0052cc !important;
+    transform: scale(1.05) !important;
 }}
 
 /* 3. Sidebar Collapse Button (in sidebar when expanded) */
