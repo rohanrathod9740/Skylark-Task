@@ -754,13 +754,10 @@ PAGES = [
     "🔍 Data Explorer",
     "📄 Leadership Update"
 ]
-if "active_page" not in st.session_state:
-    st.session_state.active_page = "🏠 Overview"
+if "sidebar_nav" not in st.session_state:
+    st.session_state.sidebar_nav = "🏠 Overview"
 
-menu = st.sidebar.radio("Navigate", PAGES,
-    index=PAGES.index(st.session_state.active_page),
-    key="sidebar_nav")
-st.session_state.active_page = menu
+menu = st.sidebar.radio("Navigate", PAGES, key="sidebar_nav")
 st.sidebar.markdown("---")
 
 # ── Theme Toggle ──────────────────────────────────────────────────────────
@@ -878,7 +875,7 @@ if menu == "🏠 Overview":
             </div>
             """, unsafe_allow_html=True)
             if st.button(f"Open {title} →", key=f"feat_btn_{i}", use_container_width=True):
-                st.session_state.active_page = target
+                st.session_state.sidebar_nav = target
                 st.rerun()
             st.markdown("<br>", unsafe_allow_html=True)
 
